@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="icon192" width="192" height="192"></canvas>
+<canvas id="icon512" width="512" height="512"></canvas>
+<script>
+function createIcon(canvas, size) {
+  const ctx = canvas.getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, size, size);
+  gradient.addColorStop(0, '#10b981');
+  gradient.addColorStop(1, '#3b82f6');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = 'white';
+  ctx.font = `bold ${size * 0.4}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🛒', size / 2, size / 2);
+}
+createIcon(document.getElementById('icon192'), 192);
+createIcon(document.getElementById('icon512'), 512);
+document.getElementById('icon192').toBlob(blob => {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'icon-192.png';
+  a.click();
+});
+setTimeout(() => {
+  document.getElementById('icon512').toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'icon-512.png';
+    a.click();
+  });
+}, 1000);
+</script>
+</body>
+</html>

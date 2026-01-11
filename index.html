@@ -17,7 +17,17 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <link rel="stylesheet" href="style.css" />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+  </head>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   </head>
@@ -70,16 +80,33 @@
                 <span id="totalItens">0</span>
               </div>
               <div class="summary-item">
+                <span>Comprados:</span>
+                <span id="totalComprados">0</span>
+              </div>
+              <div class="summary-item">
                 <span>Total Geral:</span>
                 <span id="totalGeral">R$ 0,00</span>
               </div>
+            </div>
+            <div class="action-buttons">
+              <button id="viewChartsBtn" class="btn-secondary">
+                <i class="fas fa-chart-pie"></i> Gráficos
+              </button>
+              <button id="exportPdfBtn" class="btn-secondary">
+                <i class="fas fa-file-pdf"></i> PDF
+              </button>
+              <button id="toggleThemeBtn" class="btn-secondary">
+                <i class="fas fa-moon"></i>
+              </button>
             </div>
           </div>
         </div>
 
         <!-- Painel de Categorias -->
         <div class="categories-panel">
-          <h2><i class="fas fa-tags"></i> Categorias</h2>
+          <div class="panel-header-categories">
+            <h2><i class="fas fa-tags"></i> Categorias</h2>
+          </div>
           <div class="categories-list" id="categoriasList">
             <!-- Categorias serão carregadas aqui -->
           </div>
@@ -93,6 +120,30 @@
             </h2>
             <div class="categoria-total">
               Total: <span id="categoriaTotal">R$ 0,00</span>
+            </div>
+          </div>
+
+          <!-- Busca e Filtros -->
+          <div class="search-filter-container">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Buscar itens..."
+                aria-label="Buscar itens"
+              />
+            </div>
+            <div class="filter-buttons">
+              <select id="sortSelect" aria-label="Ordenar por">
+                <option value="nome">Nome A-Z</option>
+                <option value="nome-desc">Nome Z-A</option>
+                <option value="valor">Menor preço</option>
+                <option value="valor-desc">Maior preço</option>
+              </select>
+              <button id="clearCompradosBtn" class="btn-clear" title="Limpar comprados">
+                <i class="fas fa-broom"></i>
+              </button>
             </div>
           </div>
 
@@ -124,11 +175,88 @@
               placeholder="Nome do item"
               aria-label="Nome do item"
             />
+            <div class="quantity-value-group">
+              <input
+                type="number"
+                id="editItemQuantidade"
+                placeholder="Qtd"
+                min="1"
+                value="1"
+                aria-label="Quantidade"
+              />
+              <input
+                type="number"
+                id="editItemValor"
+                placeholder="Valor (R$)"
+                step="0.01"
+                min="0"
+                aria-label="Valor do item"
+              />
+            </div>
+            <div class="subtotal-display">
+              Subtotal: <span id="editSubtotal">R$ 0,00</span>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button id="saveEditBtn" class="btn-primary">
+              <i class="fas fa-save"></i> Salvar
+            </button>
+            <button id="deleteItemBtn" class="btn-danger">
+              <i class="fas fa-trash"></i> Excluir
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal para editar categoria -->
+      <div id="editCategoriaModal" class="modal" role="dialog" aria-modal="true">
+        <div class="modal-content">
+          <button class="close-categoria" aria-label="Fechar modal">&times;</button>
+          <h3>Editar Categoria</h3>
+          <div class="input-group">
+            <input
+              type="text"
+              id="editCategoriaNome"
+              placeholder="Nome da categoria"
+              aria-label="Nome da categoria"
+            />
             <input
               type="number"
-              id="editItemValor"
-              placeholder="Valor (R$)"
+              id="editCategoriaOrcamento"
+              placeholder="Orçamento mensal (opcional)"
               step="0.01"
+              min="0"
+              aria-label="Orçamento"
+            />
+          </div>
+          <div class="modal-actions">
+            <button id="saveCategoriaBtn" class="btn-primary">
+              <i class="fas fa-save"></i> Salvar
+            </button>
+            <button id="deleteCategoriaBtn" class="btn-danger">
+              <i class="fas fa-trash"></i> Excluir
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal de Gráficos -->
+      <div id="chartsModal" class="modal" role="dialog" aria-modal="true">
+        <div class="modal-content modal-large">
+          <button class="close-charts" aria-label="Fechar modal">&times;</button>
+          <h3><i class="fas fa-chart-pie"></i> Análise de Gastos</h3>
+          <div class="charts-container">
+            <div class="chart-wrapper">
+              <h4>Gastos por Categoria</h4>
+              <canvas id="pieChart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+              <h4>Comparativo de Valores</h4>
+              <canvas id="barChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
               min="0"
               aria-label="Valor do item"
             />
