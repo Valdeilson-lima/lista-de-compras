@@ -1017,7 +1017,7 @@ html {
   background: linear-gradient(135deg, #d1fae5, #a7f3d0);
   border-radius: calc(var(--border-radius) - 4px);
   font-weight: 700;
-  color: var(--dark-color);
+  color: #047857;
   text-align: center;
   font-size: 1.1rem;
 }
@@ -1135,6 +1135,47 @@ body.dark-mode .chart-wrapper {
 
 body.dark-mode footer {
   background: rgba(31, 41, 55, 0.8);
+}
+
+/* Subtotal display no modo escuro */
+body.dark-mode .subtotal-display {
+  background: linear-gradient(135deg, #065f46, #047857) !important;
+  color: #d1fae5 !important;
+}
+
+body.dark-mode .subtotal-display span,
+body.dark-mode #editSubtotal {
+  color: #d1fae5 !important;
+}
+
+/* Inputs do modal no modo escuro - maior contraste */
+body.dark-mode .modal-content .input-group #editItemNome,
+body.dark-mode .modal-content .quantity-value-group #editItemQuantidade,
+body.dark-mode .modal-content .quantity-value-group #editItemValor {
+  background-color: #374151 !important;
+  color: #f9fafb !important;
+  border-color: #4b5563 !important;
+}
+
+body.dark-mode .modal-content .input-group #editItemNome::placeholder,
+body.dark-mode
+  .modal-content
+  .quantity-value-group
+  #editItemQuantidade::placeholder,
+body.dark-mode
+  .modal-content
+  .quantity-value-group
+  #editItemValor::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+body.dark-mode .modal-content .input-group #editItemNome:focus,
+body.dark-mode .modal-content .quantity-value-group #editItemQuantidade:focus,
+body.dark-mode .modal-content .quantity-value-group #editItemValor:focus {
+  background-color: #1f2937 !important;
+  border-color: var(--primary-color) !important;
+  color: #f9fafb !important;
 }
 
 /* Panel header categories */
