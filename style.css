@@ -209,6 +209,7 @@ header h1 {
   font-size: 1rem;
   transition: var(--transition);
   background-color: var(--light-color);
+  color: var(--dark-color);
 }
 
 .input-group input:focus,
@@ -512,6 +513,7 @@ header h1 {
   text-align: right;
   transition: var(--transition);
   background-color: white;
+  color: var(--dark-color);
 }
 
 @media (min-width: 640px) {
@@ -847,6 +849,8 @@ html {
   border-radius: calc(var(--border-radius) - 4px);
   font-size: 1rem;
   transition: var(--transition);
+  background-color: white;
+  color: var(--dark-color);
 }
 
 .search-box input:focus {
@@ -867,6 +871,7 @@ html {
   font-size: 0.95rem;
   transition: var(--transition);
   background-color: white;
+  color: var(--dark-color);
   cursor: pointer;
 }
 
@@ -1077,10 +1082,44 @@ body.dark-mode .modal-content {
 body.dark-mode .input-group input,
 body.dark-mode .input-group select,
 body.dark-mode .search-box input,
-body.dark-mode .filter-buttons select {
+body.dark-mode .filter-buttons select,
+body.dark-mode .item-value-input {
   background-color: #374151;
-  color: var(--light-color);
+  color: #f9fafb;
   border-color: #4b5563;
+}
+
+body.dark-mode .input-group input::placeholder,
+body.dark-mode .search-box input::placeholder,
+body.dark-mode .item-value-input::placeholder {
+  color: #9ca3af;
+  opacity: 0.8;
+}
+
+body.dark-mode .input-group input:focus,
+body.dark-mode .input-group select:focus,
+body.dark-mode .search-box input:focus,
+body.dark-mode .filter-buttons select:focus,
+body.dark-mode .item-value-input:focus {
+  background-color: #1f2937;
+  border-color: var(--primary-color);
+  color: #f9fafb;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* Options dentro dos selects no modo escuro */
+body.dark-mode select option {
+  background-color: #374151;
+  color: #f9fafb;
+}
+
+/* Hover nos inputs e selects no modo escuro */
+body.dark-mode .input-group input:hover,
+body.dark-mode .input-group select:hover,
+body.dark-mode .search-box input:hover,
+body.dark-mode .filter-buttons select:hover,
+body.dark-mode .item-value-input:hover {
+  border-color: #6b7280;
 }
 
 body.dark-mode .category-card,
