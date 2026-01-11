@@ -637,7 +637,9 @@ header h1 {
   color: var(--dark-color);
 }
 
-.close, .close-categoria, .close-charts {
+.close,
+.close-categoria,
+.close-charts {
   position: absolute;
   top: 15px;
   right: 15px;
@@ -658,7 +660,9 @@ header h1 {
   box-shadow: var(--shadow-sm);
 }
 
-.close:hover, .close-categoria:hover, .close-charts:hover {
+.close:hover,
+.close-categoria:hover,
+.close-charts:hover {
   color: white;
   background: linear-gradient(135deg, var(--danger-color), var(--danger-hover));
   border-color: var(--danger-color);
@@ -666,7 +670,9 @@ header h1 {
   box-shadow: var(--shadow);
 }
 
-.close:active, .close-categoria:active, .close-charts:active {
+.close:active,
+.close-categoria:active,
+.close-charts:active {
   transform: rotate(90deg) scale(0.95);
 }
 
