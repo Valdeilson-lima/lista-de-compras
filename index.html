@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0"
+    />
+    <meta
+      name="description"
+      content="Lista de compras inteligente para gerenciar seus gastos mensais"
+    />
+    <meta name="theme-color" content="#10b981" />
+    <title>Lista de Compras Dinâmica</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1><i class="fas fa-shopping-cart"></i> Lista de Compras</h1>
+        <p class="subtitle">Organize suas compras e controle seus gastos</p>
+      </header>
+
+      <div class="app-container">
+        <!-- Painel de Controle -->
+        <div class="control-panel">
+          <div class="section">
+            <h2><i class="fas fa-plus-circle"></i> Nova Categoria</h2>
+            <div class="input-group">
+              <input
+                type="text"
+                id="categoriaNome"
+                placeholder="Ex: Cereais, Laticínios..."
+              />
+              <button id="addCategoriaBtn" class="btn-primary">
+                <i class="fas fa-plus"></i> Adicionar
+              </button>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2><i class="fas fa-list"></i> Novo Item</h2>
+            <div class="input-group">
+              <input type="text" id="itemNome" placeholder="Nome do item" />
+              <select id="itemCategoria">
+                <option value="">Selecione uma categoria</option>
+              </select>
+              <button id="addItemBtn" class="btn-primary">
+                <i class="fas fa-plus"></i> Adicionar
+              </button>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2><i class="fas fa-chart-bar"></i> Resumo</h2>
+            <div class="summary">
+              <div class="summary-item">
+                <span>Categorias:</span>
+                <span id="totalCategorias">0</span>
+              </div>
+              <div class="summary-item">
+                <span>Itens:</span>
+                <span id="totalItens">0</span>
+              </div>
+              <div class="summary-item">
+                <span>Total Geral:</span>
+                <span id="totalGeral">R$ 0,00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Painel de Categorias -->
+        <div class="categories-panel">
+          <h2><i class="fas fa-tags"></i> Categorias</h2>
+          <div class="categories-list" id="categoriasList">
+            <!-- Categorias serão carregadas aqui -->
+          </div>
+        </div>
+
+        <!-- Painel de Itens da Categoria Selecionada -->
+        <div class="items-panel">
+          <div class="panel-header">
+            <h2 id="categoriaSelecionadaTitulo">
+              <i class="fas fa-bread-slice"></i> Selecione uma categoria
+            </h2>
+            <div class="categoria-total">
+              Total: <span id="categoriaTotal">R$ 0,00</span>
+            </div>
+          </div>
+
+          <div class="items-list" id="itensList">
+            <!-- Itens da categoria selecionada serão carregados aqui -->
+            <div class="empty-state">
+              <i class="fas fa-clipboard-list fa-3x"></i>
+              <p>Selecione uma categoria para ver os itens</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal para editar item -->
+      <div
+        id="editModal"
+        class="modal"
+        role="dialog"
+        aria-labelledby="modalTitle"
+        aria-modal="true"
+      >
+        <div class="modal-content">
+          <button class="close" aria-label="Fechar modal">&times;</button>
+          <h3 id="modalTitle">Editar Item</h3>
+          <div class="input-group">
+            <input
+              type="text"
+              id="editItemNome"
+              placeholder="Nome do item"
+              aria-label="Nome do item"
+            />
+            <input
+              type="number"
+              id="editItemValor"
+              placeholder="Valor (R$)"
+              step="0.01"
+              min="0"
+              aria-label="Valor do item"
+            />
+          </div>
+          <div class="modal-actions">
+            <button id="saveEditBtn" class="btn-primary">
+              <i class="fas fa-save"></i> Salvar
+            </button>
+            <button id="deleteItemBtn" class="btn-danger">
+              <i class="fas fa-trash"></i> Excluir
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <p><i class="fas fa-heart"></i> Lista de Compras &copy; 2026</p>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
