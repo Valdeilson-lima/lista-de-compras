@@ -1,35 +1,80 @@
 // Service Worker para PWA - Cache offline
-const CACHE_NAME = "lista-compras-v1";
+const CACHE_NAME = "lista-compras-v2";
 const urlsToCache = [
   "/",
+  "/home.html",
   "/index.html",
+  "/pages/categorias.html",
+  "/pages/itens.html",
+  "/pages/estatisticas.html",
+  "/pages/configuracoes.html",
+  "/css/global.css",
+  "/css/navbar.css",
+  "/css/components.css",
+  "/js/utils.js",
   "/style.css",
   "/script.js",
   "/firebase-config.js",
+  "/polyfills.js",
   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
   "https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js",
 ];
 
-// Install
+// Install - cachear todos os recursos
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open("lista-compras-v1").then((cache) => {
-      return cache.addAll([
-        "/",
-        "/index.html",
-        "/style.css",
-        "/script.js",
-        "/firebase-config.js",
-      ]);
-    })
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log("Cache aberto");
+      return cache.addAll(urlsToCache).catch((error) => {
+        console.error("Erro ao cachear recursos:", error);
+      });
+    }),
   );
+  self.skipWaiting();
 });
 
-// Fetch
+// Activate - limpar caches antigos
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            console.log("Removendo cache antigo:", cacheName);
+            return caches.delete(cacheName);
+          }
+        }),
+      );
+    }),
+  );
+  return self.clients.claim();
+});
+
+// Fetch - estratégia Network First com fallback para cache
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
+    fetch(event.request)
+      .then((response) => {
+        // Se a resposta é válida, clonar e cachear
+        if (response && response.status === 200) {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        // Se falhar (offline), buscar do cache
+        return caches.match(event.request).then((response) => {
+          if (response) {
+            return response;
+          }
+          // Se não houver no cache, retornar página offline personalizada
+          if (event.request.destination === "document") {
+            return caches.match("/home.html");
+          }
+        });
+      }),
   );
 });

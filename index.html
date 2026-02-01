@@ -4,88 +4,63 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=5.0"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
     />
     <meta
       name="description"
       content="Lista de compras inteligente para gerenciar seus gastos mensais"
     />
     <meta name="theme-color" content="#10b981" />
+    <meta name="msapplication-TileColor" content="#10b981" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Lista de Compras Dinâmica</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <link rel="stylesheet" href="style.css" />
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <!-- jsPDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json" />
-    <link rel="apple-touch-icon" href="icon-192.png" />
-  </head>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Redirecionar para a nova estrutura -->
+    <script>
+      window.location.href = '/home.html';
+    </script>
+    
+    <style>
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      .loading {
+        text-align: center;
+      }
+      .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid white;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
   </head>
   <body>
-    <div class="container">
-      <header>
-        <h1><i class="fas fa-shopping-cart"></i> Lista de Compras</h1>
-        <p class="subtitle">Organize suas compras e controle seus gastos</p>
-      </header>
-
-      <div class="app-container">
-        <!-- Painel de Controle -->
-        <div class="control-panel">
-          <div class="section">
-            <h2><i class="fas fa-plus-circle"></i> Nova Categoria</h2>
-            <div class="input-group">
-              <input
-                type="text"
-                id="categoriaNome"
-                placeholder="Ex: Cereais, Laticínios..."
-              />
-              <button id="addCategoriaBtn" class="btn-primary">
-                <i class="fas fa-plus"></i> Adicionar
-              </button>
-            </div>
-          </div>
-
-          <div class="section">
-            <h2><i class="fas fa-list"></i> Novo Item</h2>
-            <div class="input-group">
-              <input type="text" id="itemNome" placeholder="Nome do item" />
-              <select id="itemCategoria">
-                <option value="">Selecione uma categoria</option>
-              </select>
-              <button id="addItemBtn" class="btn-primary">
-                <i class="fas fa-plus"></i> Adicionar
-              </button>
-            </div>
-          </div>
-
-          <div class="section">
-            <h2><i class="fas fa-chart-bar"></i> Resumo</h2>
-            <div class="summary">
-              <div class="summary-item">
-                <span>Categorias:</span>
-                <span id="totalCategorias">0</span>
-              </div>
-              <div class="summary-item">
-                <span>Itens:</span>
-                <span id="totalItens">0</span>
-              </div>
-              <div class="summary-item">
-                <span>Comprados:</span>
-                <span id="totalComprados">0</span>
-              </div>
-              <div class="summary-item">
-                <span>Total Geral:</span>
-                <span id="totalGeral">R$ 0,00</span>
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Redirecionando...</p>
+      <p style="margin-top: 20px;">
+        <a href="/home.html" style="color: white; text-decoration: underline;">
+          Clique aqui se não for redirecionado automaticamente
+        </a>
+      </p>
+    </div>
+  </body>
+</html>
               </div>
             </div>
             <div class="action-buttons">
@@ -124,25 +99,26 @@
           </div>
 
           <!-- Busca e Filtros -->
-          <div class="search-filter-container">
+          <div class="search-filter-container" role="search" aria-label="Buscar e filtrar itens">
             <div class="search-box">
-              <i class="fas fa-search"></i>
+              <i class="fas fa-search" aria-hidden="true"></i>
               <input
-                type="text"
+                type="search"
                 id="searchInput"
                 placeholder="Buscar itens..."
-                aria-label="Buscar itens"
+                aria-label="Buscar itens por nome"
+                autocomplete="off"
               />
             </div>
             <div class="filter-buttons">
-              <select id="sortSelect" aria-label="Ordenar por">
+              <select id="sortSelect" aria-label="Ordenar itens por">
                 <option value="nome">Nome A-Z</option>
                 <option value="nome-desc">Nome Z-A</option>
                 <option value="valor">Menor preço</option>
                 <option value="valor-desc">Maior preço</option>
               </select>
-              <button id="clearCompradosBtn" class="btn-clear" title="Limpar comprados">
-                <i class="fas fa-broom"></i>
+              <button id="clearCompradosBtn" class="btn-clear" title="Limpar itens comprados" aria-label="Limpar itens marcados como comprados">
+                <i class="fas fa-broom" aria-hidden="true"></i>
               </button>
             </div>
           </div>
@@ -264,6 +240,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="polyfills.js"></script>
     <script src="firebase-config.js"></script>
     <script src="script.js"></script>
   </body>

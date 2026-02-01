@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+    />
+    <meta
+      name="description"
+      content="Lista de compras inteligente para gerenciar seus gastos mensais"
+    />
+    <meta name="theme-color" content="#10b981" />
+    <meta name="msapplication-TileColor" content="#10b981" />
+    <title>Lista de Compras - Home</title>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/navbar.css" />
+    <link rel="stylesheet" href="css/components.css" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Hero Section -->
+      <header
+        style="
+          text-align: center;
+          margin-bottom: 40px;
+          padding: 40px 20px;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+          border-radius: 16px;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+          animation: slideDown 0.5s ease-out;
+        "
+      >
+        <h1
+          style="
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          "
+        >
+          <i class="fas fa-shopping-cart"></i> Lista de Compras
+        </h1>
+        <p style="font-size: 1.2rem; color: #6b7280; margin-bottom: 25px">
+          Organize suas compras e controle seus gastos de forma inteligente
+        </p>
+        <div
+          style="
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+          "
+        >
+          <a href="pages/categorias.html" class="btn btn-primary">
+            <i class="fas fa-tags"></i> Gerenciar Categorias
+          </a>
+          <a href="pages/itens.html" class="btn btn-secondary">
+            <i class="fas fa-list"></i> Gerenciar Itens
+          </a>
+          <button id="toggleThemeBtn" class="btn btn-outline">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div
+          class="stat-card"
+          style="background: linear-gradient(135deg, #10b981, #059669)"
+        >
+          <i class="fas fa-tags stat-card-icon"></i>
+          <span class="stat-card-label">Categorias</span>
+          <span class="stat-card-value" id="totalCategorias">0</span>
+        </div>
+
+        <div
+          class="stat-card"
+          style="background: linear-gradient(135deg, #3b82f6, #2563eb)"
+        >
+          <i class="fas fa-list stat-card-icon"></i>
+          <span class="stat-card-label">Itens</span>
+          <span class="stat-card-value" id="totalItens">0</span>
+        </div>
+
+        <div
+          class="stat-card"
+          style="background: linear-gradient(135deg, #f59e0b, #d97706)"
+        >
+          <i class="fas fa-check-circle stat-card-icon"></i>
+          <span class="stat-card-label">Comprados</span>
+          <span class="stat-card-value" id="totalComprados">0</span>
+        </div>
+
+        <div
+          class="stat-card"
+          style="background: linear-gradient(135deg, #8b5cf6, #7c3aed)"
+        >
+          <i class="fas fa-dollar-sign stat-card-icon"></i>
+          <span class="stat-card-label">Total Geral</span>
+          <span class="stat-card-value" id="totalGeral">R$ 0,00</span>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-bolt"></i> Ações Rápidas</h2>
+        </div>
+        <div class="card-body">
+          <div class="grid grid-3">
+            <a href="pages/categorias.html" class="action-card">
+              <i class="fas fa-plus-circle"></i>
+              <h3>Nova Categoria</h3>
+              <p>Crie categorias para organizar suas compras</p>
+            </a>
+
+            <a href="pages/itens.html" class="action-card">
+              <i class="fas fa-shopping-basket"></i>
+              <h3>Novo Item</h3>
+              <p>Adicione itens à sua lista de compras</p>
+            </a>
+
+            <a href="pages/estatisticas.html" class="action-card">
+              <i class="fas fa-chart-line"></i>
+              <h3>Ver Estatísticas</h3>
+              <p>Analise seus gastos com gráficos</p>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Categories -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-tags"></i> Categorias Recentes</h2>
+          <a
+            href="pages/categorias.html"
+            class="btn btn-outline"
+            style="padding: 8px 16px"
+            >Ver Todas</a
+          >
+        </div>
+        <div class="card-body">
+          <div id="recentCategories" class="grid grid-3">
+            <div class="empty-state" style="padding: 40px">
+              <i class="fas fa-folder-open fa-2x"></i>
+              <p>Nenhuma categoria cadastrada ainda</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Items -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-clock"></i> Itens Adicionados Recentemente</h2>
+          <a
+            href="pages/itens.html"
+            class="btn btn-outline"
+            style="padding: 8px 16px"
+            >Ver Todos</a
+          >
+        </div>
+        <div class="card-body">
+          <div id="recentItems">
+            <div class="empty-state" style="padding: 40px">
+              <i class="fas fa-clipboard-list fa-2x"></i>
+              <p>Nenhum item cadastrado ainda</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer
+        style="
+          text-align: center;
+          padding: 30px;
+          margin-top: 40px;
+          background: rgba(255, 255, 255, 0.9);
+          border-radius: 12px;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        "
+      >
+        <p style="color: #6b7280; margin: 0">
+          <i class="fas fa-heart" style="color: #ef4444"></i> Lista de Compras
+          &copy; 2026
+        </p>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="polyfills.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="js/utils.js"></script>
+    <script>
+      // Inicializar página
+      document.addEventListener("DOMContentLoaded", function () {
+        inicializarNavbar();
+        inicializarTema();
+        carregarDashboard();
+
+        // Toggle tema
+        const toggleBtn = document.getElementById("toggleThemeBtn");
+        if (toggleBtn) {
+          toggleBtn.addEventListener("click", toggleTema);
+        }
+      });
+
+      // Carregar dados do dashboard
+      function carregarDashboard() {
+        if (!db) {
+          mostrarToast("Erro ao conectar com o banco de dados", "error");
+          return;
+        }
+
+        // Carregar categorias
+        db.collection("categorias")
+          .orderBy("dataCriacao", "desc")
+          .limit(6)
+          .onSnapshot((snapshot) => {
+            const categorias = [];
+            snapshot.forEach((doc) => {
+              categorias.push({ id: doc.id, ...doc.data() });
+            });
+
+            // Atualizar total de categorias
+            db.collection("categorias")
+              .get()
+              .then((snap) => {
+                document.getElementById("totalCategorias").textContent =
+                  snap.size;
+              });
+
+            renderizarCategoriasRecentes(categorias);
+          });
+
+        // Carregar itens
+        db.collection("itens")
+          .orderBy("dataCriacao", "desc")
+          .limit(5)
+          .onSnapshot((snapshot) => {
+            const itens = [];
+            snapshot.forEach((doc) => {
+              itens.push({ id: doc.id, ...doc.data() });
+            });
+
+            // Atualizar estatísticas
+            db.collection("itens")
+              .get()
+              .then((snap) => {
+                let totalItens = 0;
+                let totalComprados = 0;
+                let totalGeral = 0;
+
+                snap.forEach((doc) => {
+                  const item = doc.data();
+                  totalItens++;
+                  if (item.comprado) totalComprados++;
+                  const quantidade = item.quantidade || 1;
+                  const valor = parseFloat(item.valor) || 0;
+                  totalGeral += valor * quantidade;
+                });
+
+                document.getElementById("totalItens").textContent = totalItens;
+                document.getElementById("totalComprados").textContent =
+                  totalComprados;
+                document.getElementById("totalGeral").textContent =
+                  formatarReal(totalGeral);
+              });
+
+            renderizarItensRecentes(itens);
+          });
+      }
+
+      function renderizarCategoriasRecentes(categorias) {
+        const container = document.getElementById("recentCategories");
+
+        if (categorias.length === 0) {
+          container.innerHTML = `
+          <div class="empty-state" style="padding: 40px;">
+            <i class="fas fa-folder-open fa-2x"></i>
+            <p>Nenhuma categoria cadastrada ainda</p>
+          </div>
+        `;
+          return;
+        }
+
+        container.innerHTML = categorias
+          .map(
+            (cat) => `
+        <div class="category-preview-card">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+            <i class="fas fa-tag" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+            <h3 style="font-size: 1.2rem; margin: 0;">${sanitizeInput(cat.nome)}</h3>
+          </div>
+          ${cat.orcamento ? `<p style="color: var(--gray-darker); margin: 0;">Orçamento: ${formatarReal(cat.orcamento)}</p>` : ""}
+        </div>
+      `,
+          )
+          .join("");
+      }
+
+      function renderizarItensRecentes(itens) {
+        const container = document.getElementById("recentItems");
+
+        if (itens.length === 0) {
+          container.innerHTML = `
+          <div class="empty-state" style="padding: 40px;">
+            <i class="fas fa-clipboard-list fa-2x"></i>
+            <p>Nenhum item cadastrado ainda</p>
+          </div>
+        `;
+          return;
+        }
+
+        container.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          ${itens
+            .map(
+              (item) => `
+            <div class="item-preview" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255, 255, 255, 0.6); border-radius: 8px; transition: var(--transition-fast);">
+              <div style="display: flex; align-items: center; gap: 15px;">
+                <i class="fas fa-${item.comprado ? "check-circle" : "circle"}" style="color: ${item.comprado ? "var(--success-color)" : "var(--gray-dark)"};"></i>
+                <div>
+                  <div style="font-weight: 600; ${item.comprado ? "text-decoration: line-through; opacity: 0.6;" : ""}">${sanitizeInput(item.nome)}</div>
+                  <div style="font-size: 0.9rem; color: var(--gray-darker);">Qtd: ${item.quantidade || 1}</div>
+                </div>
+              </div>
+              <div style="font-weight: 700; color: var(--primary-color);">
+                ${formatarReal((item.valor || 0) * (item.quantidade || 1))}
+              </div>
+            </div>
+          `,
+            )
+            .join("")}
+        </div>
+      `;
+      }
+    </script>
+
+    <style>
+      .action-card {
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 12px;
+        text-align: center;
+        text-decoration: none;
+        color: var(--dark-color);
+        transition: var(--transition-fast);
+        border: 2px solid transparent;
+      }
+
+      .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary-color);
+        background: white;
+      }
+
+      .action-card i {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+      }
+
+      .action-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+        color: var(--dark-color);
+      }
+
+      .action-card p {
+        color: var(--gray-darker);
+        font-size: 0.95rem;
+        margin: 0;
+      }
+
+      .category-preview-card {
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 12px;
+        transition: var(--transition-fast);
+      }
+
+      .category-preview-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+        background: white;
+      }
+
+      body.dark-mode .action-card,
+      body.dark-mode .category-preview-card {
+        background: rgba(45, 55, 72, 0.95);
+        color: var(--light-color);
+      }
+
+      body.dark-mode .action-card:hover,
+      body.dark-mode .category-preview-card:hover {
+        background: rgba(55, 65, 81, 0.95);
+      }
+
+      body.dark-mode .action-card h3,
+      body.dark-mode .action-card p {
+        color: var(--light-color);
+      }
+
+      body.dark-mode .item-preview {
+        background: rgba(45, 55, 72, 0.8) !important;
+      }
+    </style>
+  </body>
+</html>

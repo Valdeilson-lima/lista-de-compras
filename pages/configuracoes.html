@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Configurações da Lista de Compras" />
+    <meta name="theme-color" content="#10b981" />
+    <title>Configurações - Lista de Compras</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/navbar.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+
+    <link rel="manifest" href="../manifest.json" />
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="page-header">
+        <h1><i class="fas fa-cog"></i> Configurações</h1>
+        <p>Personalize e gerencie seu aplicativo</p>
+      </div>
+
+      <!-- Tema -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-palette"></i> Aparência</h2>
+        </div>
+        <div class="card-body">
+          <div class="config-item">
+            <div class="config-info">
+              <h3>Tema Escuro</h3>
+              <p>Ative o modo escuro para reduzir o cansaço visual</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="darkModeToggle" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exportar Dados -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-download"></i> Exportar Dados</h2>
+        </div>
+        <div class="card-body">
+          <div class="config-item">
+            <div class="config-info">
+              <h3>Exportar como PDF</h3>
+              <p>Baixe um relatório completo da sua lista de compras</p>
+            </div>
+            <button id="exportPdfBtn" class="btn btn-primary">
+              <i class="fas fa-file-pdf"></i> Gerar PDF
+            </button>
+          </div>
+          <div class="config-item">
+            <div class="config-info">
+              <h3>Exportar como JSON</h3>
+              <p>Faça backup dos seus dados em formato JSON</p>
+            </div>
+            <button id="exportJsonBtn" class="btn btn-secondary">
+              <i class="fas fa-file-code"></i> Baixar JSON
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dados -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-database"></i> Gerenciar Dados</h2>
+        </div>
+        <div class="card-body">
+          <div class="stats-info">
+            <div class="stat-info-item">
+              <i class="fas fa-tags"></i>
+              <div>
+                <strong id="totalCategorias">0</strong>
+                <span>Categorias</span>
+              </div>
+            </div>
+            <div class="stat-info-item">
+              <i class="fas fa-list"></i>
+              <div>
+                <strong id="totalItens">0</strong>
+                <span>Itens</span>
+              </div>
+            </div>
+            <div class="stat-info-item">
+              <i class="fas fa-check-circle"></i>
+              <div>
+                <strong id="totalComprados">0</strong>
+                <span>Comprados</span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="config-item"
+            style="
+              margin-top: 25px;
+              border-top: 2px solid var(--gray-color);
+              padding-top: 25px;
+            "
+          >
+            <div class="config-info">
+              <h3>Limpar Itens Comprados</h3>
+              <p>Remove todos os itens marcados como comprados</p>
+            </div>
+            <button id="clearCompradosBtn" class="btn btn-warning">
+              <i class="fas fa-broom"></i> Limpar Comprados
+            </button>
+          </div>
+
+          <div class="config-item danger-zone">
+            <div class="config-info">
+              <h3>Limpar Todos os Dados</h3>
+              <p class="text-danger">
+                ⚠️ Esta ação é irreversível! Todos os dados serão apagados
+                permanentemente.
+              </p>
+            </div>
+            <button id="clearAllBtn" class="btn btn-danger">
+              <i class="fas fa-trash-alt"></i> Apagar Tudo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sobre -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-info-circle"></i> Sobre</h2>
+        </div>
+        <div class="card-body">
+          <div class="about-section">
+            <div class="about-logo">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <h2>Lista de Compras Inteligente</h2>
+            <p class="version">Versão 2.0.0</p>
+            <p class="description">
+              Um aplicativo completo para gerenciar suas compras mensais com
+              controle de gastos, gráficos estatísticos e muito mais!
+            </p>
+
+            <div class="features-list">
+              <h3>Funcionalidades:</h3>
+              <ul>
+                <li><i class="fas fa-check"></i> Organização por categorias</li>
+                <li><i class="fas fa-check"></i> Controle de orçamento</li>
+                <li><i class="fas fa-check"></i> Gráficos e estatísticas</li>
+                <li><i class="fas fa-check"></i> Exportação em PDF</li>
+                <li><i class="fas fa-check"></i> Tema escuro/claro</li>
+                <li>
+                  <i class="fas fa-check"></i> Sincronização em tempo real
+                </li>
+              </ul>
+            </div>
+
+            <div class="about-footer">
+              <p>
+                <i class="fas fa-heart" style="color: #ef4444"></i>
+                Desenvolvido com amor
+              </p>
+              <p class="copyright">&copy; 2026 Lista de Compras</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../polyfills.js"></script>
+    <script src="../firebase-config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        inicializarNavbar();
+        inicializarTema();
+        carregarEstatisticas();
+
+        // Configurar toggle de tema
+        const darkModeToggle = document.getElementById("darkModeToggle");
+        darkModeToggle.checked = document.body.classList.contains("dark-mode");
+        darkModeToggle.addEventListener("change", function () {
+          aplicarTema(this.checked);
+        });
+
+        // Event listeners
+        document
+          .getElementById("exportPdfBtn")
+          .addEventListener("click", exportarPDF);
+        document
+          .getElementById("exportJsonBtn")
+          .addEventListener("click", exportarJSON);
+        document
+          .getElementById("clearCompradosBtn")
+          .addEventListener("click", limparComprados);
+        document
+          .getElementById("clearAllBtn")
+          .addEventListener("click", limparTodosDados);
+      });
+
+      function carregarEstatisticas() {
+        if (!db) return;
+
+        // Carregar contadores
+        db.collection("categorias").onSnapshot((snapshot) => {
+          document.getElementById("totalCategorias").textContent =
+            snapshot.size;
+        });
+
+        db.collection("itens").onSnapshot((snapshot) => {
+          let totalComprados = 0;
+          snapshot.forEach((doc) => {
+            if (doc.data().comprado) totalComprados++;
+          });
+          document.getElementById("totalItens").textContent = snapshot.size;
+          document.getElementById("totalComprados").textContent =
+            totalComprados;
+        });
+      }
+
+      async function exportarPDF() {
+        try {
+          mostrarToast("Gerando PDF...", "info");
+
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+
+          // Título
+          doc.setFontSize(20);
+          doc.setTextColor(16, 185, 129);
+          doc.text("Lista de Compras", 105, 20, { align: "center" });
+
+          doc.setFontSize(10);
+          doc.setTextColor(100);
+          doc.text(
+            `Gerado em: ${new Date().toLocaleDateString("pt-BR")}`,
+            105,
+            28,
+            { align: "center" },
+          );
+
+          let y = 40;
+
+          // Carregar categorias e itens
+          const categoriasSnapshot = await db.collection("categorias").get();
+          const itensSnapshot = await db.collection("itens").get();
+
+          const categorias = [];
+          categoriasSnapshot.forEach((doc) => {
+            categorias.push({ id: doc.id, ...doc.data() });
+          });
+
+          const itens = [];
+          itensSnapshot.forEach((doc) => {
+            itens.push({ id: doc.id, ...doc.data() });
+          });
+
+          // Resumo geral
+          doc.setFontSize(14);
+          doc.setTextColor(0);
+          doc.text("Resumo Geral", 20, y);
+          y += 10;
+
+          doc.setFontSize(10);
+          const totalItens = itens.length;
+          const totalComprados = itens.filter((item) => item.comprado).length;
+          const totalGeral = itens.reduce((total, item) => {
+            return total + (item.valor || 0) * (item.quantidade || 1);
+          }, 0);
+
+          doc.text(`Total de Categorias: ${categorias.length}`, 20, y);
+          y += 7;
+          doc.text(`Total de Itens: ${totalItens}`, 20, y);
+          y += 7;
+          doc.text(`Itens Comprados: ${totalComprados}`, 20, y);
+          y += 7;
+          doc.text(`Valor Total: ${formatarReal(totalGeral)}`, 20, y);
+          y += 15;
+
+          // Itens por categoria
+          doc.setFontSize(14);
+          doc.text("Detalhamento por Categoria", 20, y);
+          y += 10;
+
+          categorias.forEach((cat) => {
+            if (y > 270) {
+              doc.addPage();
+              y = 20;
+            }
+
+            const itensCategoria = itens.filter(
+              (item) => item.categoriaId === cat.id,
+            );
+            if (itensCategoria.length === 0) return;
+
+            const totalCategoria = itensCategoria.reduce((total, item) => {
+              return total + (item.valor || 0) * (item.quantidade || 1);
+            }, 0);
+
+            doc.setFontSize(12);
+            doc.setTextColor(16, 185, 129);
+            doc.text(`${cat.nome} - ${formatarReal(totalCategoria)}`, 20, y);
+            y += 7;
+
+            doc.setFontSize(9);
+            doc.setTextColor(0);
+            itensCategoria.forEach((item) => {
+              if (y > 280) {
+                doc.addPage();
+                y = 20;
+              }
+
+              const status = item.comprado ? "[X]" : "[ ]";
+              const subtotal = (item.valor || 0) * (item.quantidade || 1);
+              const linha = `  ${status} ${item.nome} - Qtd: ${item.quantidade || 1} - ${formatarReal(subtotal)}`;
+              doc.text(linha, 25, y);
+              y += 6;
+            });
+
+            y += 5;
+          });
+
+          // Salvar PDF
+          doc.save("lista-de-compras.pdf");
+          mostrarToast("PDF gerado com sucesso!", "success");
+        } catch (error) {
+          console.error("Erro ao gerar PDF:", error);
+          mostrarToast("Erro ao gerar PDF", "error");
+        }
+      }
+
+      async function exportarJSON() {
+        try {
+          const categoriasSnapshot = await db.collection("categorias").get();
+          const itensSnapshot = await db.collection("itens").get();
+
+          const categorias = [];
+          categoriasSnapshot.forEach((doc) => {
+            categorias.push({ id: doc.id, ...doc.data() });
+          });
+
+          const itens = [];
+          itensSnapshot.forEach((doc) => {
+            itens.push({ id: doc.id, ...doc.data() });
+          });
+
+          const dados = {
+            exportadoEm: new Date().toISOString(),
+            versao: "2.0.0",
+            categorias: categorias,
+            itens: itens,
+          };
+
+          const blob = new Blob([JSON.stringify(dados, null, 2)], {
+            type: "application/json",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "lista-de-compras-backup.json";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          mostrarToast("Backup JSON criado com sucesso!", "success");
+        } catch (error) {
+          console.error("Erro ao exportar JSON:", error);
+          mostrarToast("Erro ao exportar dados", "error");
+        }
+      }
+
+      async function limparComprados() {
+        if (
+          !confirmarAcao(
+            "Deseja remover todos os itens marcados como comprados?",
+          )
+        ) {
+          return;
+        }
+
+        try {
+          const snapshot = await db
+            .collection("itens")
+            .where("comprado", "==", true)
+            .get();
+
+          if (snapshot.empty) {
+            mostrarToast("Nenhum item comprado para remover", "info");
+            return;
+          }
+
+          const batch = db.batch();
+          snapshot.forEach((doc) => {
+            batch.delete(doc.ref);
+          });
+          await batch.commit();
+
+          mostrarToast(`${snapshot.size} item(ns) removido(s)!`, "success");
+        } catch (error) {
+          console.error("Erro ao limpar comprados:", error);
+          mostrarToast("Erro ao limpar itens comprados", "error");
+        }
+      }
+
+      async function limparTodosDados() {
+        const confirmacao = prompt(
+          "ATENÇÃO: Esta ação é IRREVERSÍVEL!\n\n" +
+            "Todos os dados (categorias e itens) serão APAGADOS PERMANENTEMENTE.\n\n" +
+            'Digite "CONFIRMAR" para prosseguir:',
+        );
+
+        if (confirmacao !== "CONFIRMAR") {
+          mostrarToast("Operação cancelada", "info");
+          return;
+        }
+
+        try {
+          // Apagar itens
+          const itensSnapshot = await db.collection("itens").get();
+          const batchItens = db.batch();
+          itensSnapshot.forEach((doc) => {
+            batchItens.delete(doc.ref);
+          });
+          await batchItens.commit();
+
+          // Apagar categorias
+          const categoriasSnapshot = await db.collection("categorias").get();
+          const batchCategorias = db.batch();
+          categoriasSnapshot.forEach((doc) => {
+            batchCategorias.delete(doc.ref);
+          });
+          await batchCategorias.commit();
+
+          mostrarToast("Todos os dados foram apagados!", "success");
+        } catch (error) {
+          console.error("Erro ao limpar dados:", error);
+          mostrarToast("Erro ao apagar dados", "error");
+        }
+      }
+    </script>
+
+    <style>
+      .page-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 40px 20px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        box-shadow: var(--shadow-lg);
+        animation: slideDown 0.5s ease-out;
+      }
+
+      .page-header h1 {
+        font-size: 2.2rem;
+        color: var(--dark-color);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+      }
+
+      .page-header h1 i {
+        color: var(--primary-color);
+      }
+
+      .page-header p {
+        color: var(--gray-darker);
+        font-size: 1.1rem;
+      }
+
+      .config-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 12px;
+        margin-bottom: 15px;
+        transition: var(--transition-fast);
+      }
+
+      .config-item:hover {
+        background: rgba(255, 255, 255, 0.8);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .config-item.danger-zone {
+        border: 2px solid var(--danger-color);
+        background: rgba(239, 68, 68, 0.05);
+      }
+
+      .config-info h3 {
+        font-size: 1.2rem;
+        color: var(--dark-color);
+        margin-bottom: 5px;
+      }
+
+      .config-info p {
+        color: var(--gray-darker);
+        font-size: 0.95rem;
+        margin: 0;
+      }
+
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+      }
+
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--gray-color);
+        transition: var(--transition);
+        border-radius: 34px;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: var(--transition);
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: var(--primary-color);
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(26px);
+      }
+
+      .stats-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+        padding: 20px;
+        background: rgba(16, 185, 129, 0.1);
+        border-radius: 12px;
+      }
+
+      .stat-info-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .stat-info-item i {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+      }
+
+      .stat-info-item div {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .stat-info-item strong {
+        font-size: 1.8rem;
+        color: var(--dark-color);
+        line-height: 1;
+      }
+
+      .stat-info-item span {
+        font-size: 0.9rem;
+        color: var(--gray-darker);
+      }
+
+      .about-section {
+        text-align: center;
+        padding: 20px;
+      }
+
+      .about-logo {
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+      }
+
+      .about-logo i {
+        font-size: 3rem;
+        color: white;
+      }
+
+      .about-section h2 {
+        font-size: 2rem;
+        color: var(--dark-color);
+        margin-bottom: 10px;
+      }
+
+      .version {
+        display: inline-block;
+        padding: 5px 15px;
+        background: var(--primary-light);
+        color: var(--primary-color);
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+      }
+
+      .description {
+        color: var(--gray-darker);
+        font-size: 1.1rem;
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto 30px;
+      }
+
+      .features-list {
+        max-width: 400px;
+        margin: 30px auto;
+        text-align: left;
+      }
+
+      .features-list h3 {
+        text-align: center;
+        color: var(--dark-color);
+        margin-bottom: 20px;
+      }
+
+      .features-list ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .features-list li {
+        padding: 10px;
+        margin-bottom: 8px;
+        background: rgba(16, 185, 129, 0.1);
+        border-radius: 8px;
+        color: var(--dark-color);
+      }
+
+      .features-list li i {
+        color: var(--success-color);
+        margin-right: 10px;
+      }
+
+      .about-footer {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 2px solid var(--gray-color);
+      }
+
+      .about-footer p {
+        color: var(--gray-darker);
+        margin: 10px 0;
+      }
+
+      .copyright {
+        font-size: 0.9rem;
+      }
+
+      body.dark-mode .page-header,
+      body.dark-mode .config-item {
+        background: rgba(45, 55, 72, 0.95);
+      }
+
+      body.dark-mode .config-item:hover {
+        background: rgba(55, 65, 81, 0.95);
+      }
+
+      body.dark-mode .page-header h1,
+      body.dark-mode .config-info h3,
+      body.dark-mode .about-section h2,
+      body.dark-mode .features-list h3,
+      body.dark-mode .features-list li,
+      body.dark-mode .stat-info-item strong {
+        color: var(--light-color);
+      }
+
+      body.dark-mode .stats-info {
+        background: rgba(16, 185, 129, 0.2);
+      }
+
+      @media (max-width: 768px) {
+        .config-item {
+          flex-direction: column;
+          gap: 15px;
+          text-align: center;
+        }
+
+        .stats-info {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </body>
+</html>

@@ -8,84 +8,184 @@ let searchTerm = '';
 let sortBy = 'nome';
 let darkMode = localStorage.getItem('darkMode') === 'true';
 
-// Elementos DOM
-const categoriaNomeInput = document.getElementById('categoriaNome');
-const addCategoriaBtn = document.getElementById('addCategoriaBtn');
-const itemNomeInput = document.getElementById('itemNome');
-const itemCategoriaSelect = document.getElementById('itemCategoria');
-const addItemBtn = document.getElementById('addItemBtn');
-const categoriasList = document.getElementById('categoriasList');
-const itensList = document.getElementById('itensList');
-const categoriaSelecionadaTitulo = document.getElementById('categoriaSelecionadaTitulo');
-const categoriaTotalElement = document.getElementById('categoriaTotal');
-const totalCategoriasElement = document.getElementById('totalCategorias');
-const totalItensElement = document.getElementById('totalItens');
-const totalGeralElement = document.getElementById('totalGeral');
-const totalCompradosElement = document.getElementById('totalComprados');
+// Elementos DOM (carregados quando disponíveis)
+let categoriaNomeInput, addCategoriaBtn, itemNomeInput, itemCategoriaSelect, addItemBtn;
+let categoriasList, itensList, categoriaSelecionadaTitulo, categoriaTotalElement;
+let totalCategoriasElement, totalItensElement, totalGeralElement, totalCompradosElement;
+let searchInput, sortSelect, clearCompradosBtn;
+let editModal, closeModal, editItemNomeInput, editItemValorInput, editItemQuantidadeInput;
+let editSubtotal, saveEditBtn, deleteItemBtn;
+let editCategoriaModal, closeCategoriaModal, editCategoriaNomeInput, editCategoriaOrcamentoInput;
+let saveCategoriaBtn, deleteCategoriaBtn;
+let viewChartsBtn, exportPdfBtn, toggleThemeBtn;
+let chartsModal, closeChartsModal;
 
-// Busca e filtros
-const searchInput = document.getElementById('searchInput');
-const sortSelect = document.getElementById('sortSelect');
-const clearCompradosBtn = document.getElementById('clearCompradosBtn');
+// Função para inicializar elementos DOM
+function inicializarElementosDOM() {
+    categoriaNomeInput = document.getElementById('categoriaNome');
+    addCategoriaBtn = document.getElementById('addCategoriaBtn');
+    itemNomeInput = document.getElementById('itemNome');
+    itemCategoriaSelect = document.getElementById('itemCategoria');
+    addItemBtn = document.getElementById('addItemBtn');
+    categoriasList = document.getElementById('categoriasList');
+    itensList = document.getElementById('itensList');
+    categoriaSelecionadaTitulo = document.getElementById('categoriaSelecionadaTitulo');
+    categoriaTotalElement = document.getElementById('categoriaTotal');
+    totalCategoriasElement = document.getElementById('totalCategorias');
+    totalItensElement = document.getElementById('totalItens');
+    totalGeralElement = document.getElementById('totalGeral');
+    totalCompradosElement = document.getElementById('totalComprados');
+    searchInput = document.getElementById('searchInput');
+    sortSelect = document.getElementById('sortSelect');
+    clearCompradosBtn = document.getElementById('clearCompradosBtn');
+    editModal = document.getElementById('editModal');
+    closeModal = document.querySelector('.close');
+    editItemNomeInput = document.getElementById('editItemNome');
+    editItemValorInput = document.getElementById('editItemValor');
+    editItemQuantidadeInput = document.getElementById('editItemQuantidade');
+    editSubtotal = document.getElementById('editSubtotal');
+    saveEditBtn = document.getElementById('saveEditBtn');
+    deleteItemBtn = document.getElementById('deleteItemBtn');
+    editCategoriaModal = document.getElementById('editCategoriaModal');
+    closeCategoriaModal = document.querySelector('.close-categoria');
+    editCategoriaNomeInput = document.getElementById('editCategoriaNome');
+    editCategoriaOrcamentoInput = document.getElementById('editCategoriaOrcamento');
+    saveCategoriaBtn = document.getElementById('saveCategoriaBtn');
+    deleteCategoriaBtn = document.getElementById('deleteCategoriaBtn');
+    viewChartsBtn = document.getElementById('viewChartsBtn');
+    exportPdfBtn = document.getElementById('exportPdfBtn');
+    toggleThemeBtn = document.getElementById('toggleThemeBtn');
+    chartsModal = document.getElementById('chartsModal');
+    closeChartsModal = document.querySelector('.close-charts');
+}
 
-// Modal item
-const editModal = document.getElementById('editModal');
-const closeModal = document.querySelector('.close');
-const editItemNomeInput = document.getElementById('editItemNome');
-const editItemValorInput = document.getElementById('editItemValor');
-const editItemQuantidadeInput = document.getElementById('editItemQuantidade');
-const editSubtotal = document.getElementById('editSubtotal');
-const saveEditBtn = document.getElementById('saveEditBtn');
-const deleteItemBtn = document.getElementById('deleteItemBtn');
+// Utilitários de performance
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
 
-// Modal categoria
-const editCategoriaModal = document.getElementById('editCategoriaModal');
-const closeCategoriaModal = document.querySelector('.close-categoria');
-const editCategoriaNomeInput = document.getElementById('editCategoriaNome');
-const editCategoriaOrcamentoInput = document.getElementById('editCategoriaOrcamento');
-const saveCategoriaBtn = document.getElementById('saveCategoriaBtn');
-const deleteCategoriaBtn = document.getElementById('deleteCategoriaBtn');
+function sanitizeInput(input) {
+    const div = document.createElement('div');
+    div.textContent = input;
+    return div.innerHTML;
+}
 
-// Botões de ação
-const viewChartsBtn = document.getElementById('viewChartsBtn');
-const exportPdfBtn = document.getElementById('exportPdfBtn');
-const toggleThemeBtn = document.getElementById('toggleThemeBtn');
-
-// Modal gráficos
-const chartsModal = document.getElementById('chartsModal');
-const closeChartsModal = document.querySelector('.close-charts');
+function validateInput(input, type = 'text') {
+    if (!input || typeof input !== 'string') return false;
+    
+    input = input.trim();
+    if (input.length === 0) return false;
+    
+    switch(type) {
+        case 'number':
+            return !isNaN(input) && parseFloat(input) >= 0;
+        case 'text':
+            return input.length > 0 && input.length <= 100;
+        case 'categoria':
+            return input.length > 0 && input.length <= 50;
+        default:
+            return input.length > 0;
+    }
+}
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', function() {
-    // Aplicar tema salvo
-    if (darkMode) {
-        document.body.classList.add('dark-mode');
-        toggleThemeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+    // Inicializar elementos DOM primeiro
+    inicializarElementosDOM();
+    
+    // Verificar se elementos críticos foram encontrados
+    if (!toggleThemeBtn) {
+        console.error('Botão de tema não encontrado!');
+        return;
     }
+    
+    // Aplicar tema salvo
+    aplicarTemaSalvo();
     
     // Inicializar Firebase listeners (tempo real)
     inicializarFirebaseListeners();
     
-    // Event Listeners
-    addCategoriaBtn.addEventListener('click', adicionarCategoria);
-    addItemBtn.addEventListener('click', adicionarItem);
-    closeModal.addEventListener('click', fecharModal);
-    saveEditBtn.addEventListener('click', salvarEdicaoItem);
-    deleteItemBtn.addEventListener('click', excluirItem);
-    
-    closeCategoriaModal.addEventListener('click', fecharModalCategoria);
-    saveCategoriaBtn.addEventListener('click', salvarEdicaoCategoria);
-    deleteCategoriaBtn.addEventListener('click', excluirCategoria);
-    
-    viewChartsBtn.addEventListener('click', abrirModalGraficos);
-    exportPdfBtn.addEventListener('click', exportarPDF);
-    toggleThemeBtn.addEventListener('click', toggleTema);
-    closeChartsModal.addEventListener('click', fecharModalGraficos);
-    
-    searchInput.addEventListener('input', (e) => {
-        searchTerm = e.target.value.toLowerCase();
-        renderizarItensCategoriaSelecionada();
+    // Form submission handlers
+    document.getElementById('categoriaForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        adicionarCategoria();
     });
+    
+    document.getElementById('itemForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        adicionarItem();
+    });
+    
+    // Event Listeners com verificação de existência
+    if (addCategoriaBtn) addCategoriaBtn.addEventListener('click', adicionarCategoria);
+    if (addItemBtn) addItemBtn.addEventListener('click', adicionarItem);
+    if (closeModal) closeModal.addEventListener('click', fecharModal);
+    if (saveEditBtn) saveEditBtn.addEventListener('click', salvarEdicaoItem);
+    if (deleteItemBtn) deleteItemBtn.addEventListener('click', excluirItem);
+    
+    if (closeCategoriaModal) closeCategoriaModal.addEventListener('click', fecharModalCategoria);
+    if (saveCategoriaBtn) saveCategoriaBtn.addEventListener('click', salvarEdicaoCategoria);
+    if (deleteCategoriaBtn) deleteCategoriaBtn.addEventListener('click', excluirCategoria);
+    
+    if (viewChartsBtn) viewChartsBtn.addEventListener('click', abrirModalGraficos);
+    if (exportPdfBtn) exportPdfBtn.addEventListener('click', exportarPDF);
+    if (toggleThemeBtn) toggleThemeBtn.addEventListener('click', toggleTema);
+    if (closeChartsModal) closeChartsModal.addEventListener('click', fecharModalGraficos);
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce((e) => {
+            searchTerm = sanitizeInput(e.target.value.toLowerCase());
+            renderizarItensCategoriaSelecionada();
+        }, 300));
+    }
+    
+    if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+            sortBy = e.target.value;
+            renderizarItensCategoriaSelecionada();
+        });
+    }
+    
+    if (clearCompradosBtn) clearCompradosBtn.addEventListener('click', limparComprados);
+    
+    // Atualizar subtotal ao editar
+    if (editItemValorInput) editItemValorInput.addEventListener('input', debounce(atualizarSubtotal, 300));
+    if (editItemQuantidadeInput) editItemQuantidadeInput.addEventListener('input', debounce(atualizarSubtotal, 300));
+    
+    // Fechar modais ao clicar fora
+    window.addEventListener('click', function(event) {
+        if (event.target === editModal) fecharModal();
+        if (event.target === editCategoriaModal) fecharModalCategoria();
+        if (event.target === chartsModal) fecharModalGraficos();
+    });
+    
+    // Registrar Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+});
+
+// Função para aplicar tema salvo
+function aplicarTemaSalvo() {
+    if (darkMode) {
+        document.body.classList.add('dark-mode');
+        if (toggleThemeBtn) {
+            toggleThemeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+    } else {
+        if (toggleThemeBtn) {
+            toggleThemeBtn.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+    }
+}
     
     sortSelect.addEventListener('change', (e) => {
         sortBy = e.target.value;
@@ -120,93 +220,168 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Firebase - Listeners em tempo real
+// Firebase - Listeners em tempo real com tratamento de erros robusto
 function inicializarFirebaseListeners() {
+    // Verificar conexão com Firebase
+    if (!db) {
+        mostrarToast('Erro de conexão com o banco de dados', 'error');
+        return;
+    }
+
     // Categorias em tempo real
-    db.collection('categorias').orderBy('nome').onSnapshot((snapshot) => {
-        categorias = [];
-        snapshot.forEach((doc) => {
-            categorias.push({ id: doc.id, ...doc.data() });
+    try {
+        db.collection('categorias').orderBy('nome').onSnapshot((snapshot) => {
+            categorias = [];
+            snapshot.forEach((doc) => {
+                if (doc.exists) {
+                    categorias.push({ id: doc.id, ...doc.data() });
+                }
+            });
+            
+            // Verificar se há dados válidos antes de renderizar
+            if (Array.isArray(categorias)) {
+                atualizarSelectCategorias();
+                renderizarCategorias();
+                atualizarResumo();
+            }
+        }, (error) => {
+            console.error('Erro ao carregar categorias:', error);
+            handleFirebaseError(error, 'categorias');
         });
-        atualizarSelectCategorias();
-        renderizarCategorias();
-        atualizarResumo();
-    }, (error) => {
-        console.error('Erro ao carregar categorias:', error);
-        mostrarToast('Erro ao carregar categorias', 'error');
-    });
+    } catch (error) {
+        console.error('Erro ao inicializar listener de categorias:', error);
+        mostrarToast('Falha ao sincronizar categorias', 'error');
+    }
     
     // Itens em tempo real
-    db.collection('itens').onSnapshot((snapshot) => {
-        itens = [];
-        snapshot.forEach((doc) => {
-            itens.push({ id: doc.id, ...doc.data() });
+    try {
+        db.collection('itens').onSnapshot((snapshot) => {
+            itens = [];
+            snapshot.forEach((doc) => {
+                if (doc.exists) {
+                    itens.push({ id: doc.id, ...doc.data() });
+                }
+            });
+            
+            // Verificar se há dados válidos antes de renderizar
+            if (Array.isArray(itens)) {
+                renderizarItensCategoriaSelecionada();
+                atualizarResumo();
+            }
+        }, (error) => {
+            console.error('Erro ao carregar itens:', error);
+            handleFirebaseError(error, 'itens');
         });
-        renderizarItensCategoriaSelecionada();
-        atualizarResumo();
-    }, (error) => {
-        console.error('Erro ao carregar itens:', error);
-        mostrarToast('Erro ao carregar itens', 'error');
-    });
+    } catch (error) {
+        console.error('Erro ao inicializar listener de itens:', error);
+        mostrarToast('Falha ao sincronizar itens', 'error');
+    }
+}
+
+// Tratamento de erros específicos do Firebase
+function handleFirebaseError(error, context) {
+    let message = 'Erro desconhecido';
+    
+    if (error.code === 'unavailable') {
+        message = 'Sem conexão com a internet. Verifique sua rede.';
+    } else if (error.code === 'permission-denied') {
+        message = 'Sem permissão para acessar os dados.';
+    } else if (error.code === 'resource-exhausted') {
+        message = 'Limite de requisições excedido. Tente mais tarde.';
+    } else if (error.code === 'deadline-exceeded') {
+        message = 'Tempo limite excedido. Tente novamente.';
+    } else if (error.code === 'not-found') {
+        message = 'Dados não encontrados.';
+    } else if (error.code === 'already-exists') {
+        message = 'Item já existe.';
+    } else {
+        message = `Erro no ${context}: ${error.message || 'Tente novamente.'}`;
+    }
+    
+    mostrarToast(message, 'error');
+    
+    // Tentar reconectar após erro de conexão
+    if (error.code === 'unavailable' || error.code === 'deadline-exceeded') {
+        setTimeout(() => {
+            inicializarFirebaseListeners();
+        }, 5000);
+    }
 }
 
 // Adicionar categoria
 async function adicionarCategoria() {
-    const nome = categoriaNomeInput.value.trim();
+    if (!categoriaNomeInput) {
+        console.error('Input de categoria não encontrado');
+        return;
+    }
     
-    if (!nome) {
-        mostrarToast('Digite um nome para a categoria', 'warning');
+    const nome = sanitizeInput(categoriaNomeInput.value);
+    
+    if (!validateInput(nome, 'categoria')) {
+        mostrarToast('Digite um nome válido para a categoria (máx. 50 caracteres)', 'warning');
+        categoriaNomeInput.focus();
         return;
     }
     
     try {
-        await db.collection('categorias').add({
+        const categoriaData = {
             nome: nome,
             orcamento: 0,
-            dataCriacao: new Date()
-        });
+            dataCriacao: new Date().toISOString()
+        };
+        
+        await db.collection('categorias').add(categoriaData);
         
         categoriaNomeInput.value = '';
-        mostrarToast('Categoria adicionada!', 'success');
+        mostrarToast('Categoria adicionada com sucesso!', 'success');
     } catch (error) {
         console.error('Erro ao adicionar categoria:', error);
-        mostrarToast('Erro ao adicionar categoria', 'error');
+        mostrarToast('Erro ao adicionar categoria. Tente novamente.', 'error');
     }
 }
 
 // Adicionar item
 async function adicionarItem() {
-    const nome = itemNomeInput.value.trim();
+    if (!itemNomeInput || !itemCategoriaSelect) {
+        console.error('Inputs de item não encontrados');
+        return;
+    }
+    
+    const nome = sanitizeInput(itemNomeInput.value);
     const categoriaId = itemCategoriaSelect.value;
     
-    if (!nome) {
-        mostrarToast('Digite um nome para o item', 'warning');
+    if (!validateInput(nome, 'text')) {
+        mostrarToast('Digite um nome válido para o item (máx. 100 caracteres)', 'warning');
+        itemNomeInput.focus();
         return;
     }
     
     if (!categoriaId) {
         mostrarToast('Selecione uma categoria', 'warning');
+        itemCategoriaSelect.focus();
         return;
     }
     
     try {
-        await db.collection('itens').add({
+        const itemData = {
             nome: nome,
             categoriaId: categoriaId,
             valor: 0,
             quantidade: 1,
             comprado: false,
-            dataCriacao: new Date()
-        });
+            dataCriacao: new Date().toISOString()
+        };
+        
+        await db.collection('itens').add(itemData);
         
         itemNomeInput.value = '';
-        mostrarToast('Item adicionado!', 'success');
+        mostrarToast('Item adicionado com sucesso!', 'success');
         
         // Selecionar automaticamente a categoria
         selecionarCategoria(categoriaId);
     } catch (error) {
         console.error('Erro ao adicionar item:', error);
-        mostrarToast('Erro ao adicionar item', 'error');
+        mostrarToast('Erro ao adicionar item. Tente novamente.', 'error');
     }
 }
 
@@ -260,6 +435,8 @@ async function excluirCategoriaFirebase(categoriaId) {
 
 // UI - Renderizar categorias
 function renderizarCategorias() {
+    if (!categoriasList) return;
+    
     categoriasList.innerHTML = '';
     
     if (categorias.length === 0) {
@@ -300,7 +477,7 @@ function renderizarCategorias() {
         categoriaElement.innerHTML = `
             <div class="category-card-content">
                 <div class="category-main">
-                    <div class="category-name">${categoria.nome}</div>
+                    <div class="category-name">${sanitizeInput(categoria.nome)}</div>
                     <div class="category-info">
                         <span class="category-count">${itensCategoria.length} itens</span>
                         <span class="category-total">R$ ${totalCategoria.toFixed(2)}</span>
@@ -308,31 +485,40 @@ function renderizarCategorias() {
                     ${budgetHtml}
                 </div>
                 <div class="category-actions">
-                    <button class="category-action-btn edit" title="Editar">
+                    <button class="category-action-btn edit" title="Editar categoria">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="category-action-btn delete" title="Excluir">
+                    <button class="category-action-btn delete" title="Excluir categoria">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
             </div>
         `;
         
-        categoriaElement.querySelector('.category-main').addEventListener('click', () => {
-            selecionarCategoria(categoria.id);
-        });
+        const categoryMain = categoriaElement.querySelector('.category-main');
+        if (categoryMain) {
+            categoryMain.addEventListener('click', () => {
+                selecionarCategoria(categoria.id);
+            });
+        }
         
-        categoriaElement.querySelector('.edit').addEventListener('click', (e) => {
-            e.stopPropagation();
-            abrirModalEdicaoCategoria(categoria.id);
-        });
+        const editBtn = categoriaElement.querySelector('.edit');
+        if (editBtn) {
+            editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                abrirModalEdicaoCategoria(categoria.id);
+            });
+        }
         
-        categoriaElement.querySelector('.delete').addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (confirm(`Deseja excluir a categoria "${categoria.nome}"?`)) {
-                excluirCategoriaFirebase(categoria.id);
-            }
-        });
+        const deleteBtn = categoriaElement.querySelector('.delete');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (confirm(`Deseja excluir a categoria "${categoria.nome}"?`)) {
+                    excluirCategoriaFirebase(categoria.id);
+                }
+            });
+        }
         
         categoriasList.appendChild(categoriaElement);
     });
@@ -345,13 +531,15 @@ function selecionarCategoria(categoriaId) {
     renderizarItensCategoriaSelecionada();
     
     const categoria = categorias.find(c => c.id === categoriaId);
-    if (categoria) {
-        categoriaSelecionadaTitulo.innerHTML = `<i class="fas fa-tag"></i> ${categoria.nome}`;
+    if (categoria && categoriaSelecionadaTitulo) {
+        categoriaSelecionadaTitulo.innerHTML = `<i class="fas fa-tag"></i> ${sanitizeInput(categoria.nome)}`;
     }
 }
 
 // Renderizar itens
 function renderizarItensCategoriaSelecionada() {
+    if (!itensList) return;
+    
     itensList.innerHTML = '';
     
     if (!categoriaSelecionada) {
@@ -361,7 +549,7 @@ function renderizarItensCategoriaSelecionada() {
                 <p>Selecione uma categoria</p>
             </div>
         `;
-        categoriaTotalElement.textContent = 'R$ 0,00';
+        if (categoriaTotalElement) categoriaTotalElement.textContent = 'R$ 0,00';
         return;
     }
     
@@ -411,7 +599,7 @@ function renderizarItensCategoriaSelecionada() {
                        ${item.comprado ? 'checked' : ''}
                        data-item-id="${item.id}">
                 <div class="item-info">
-                    <div class="item-name">${item.nome}</div>
+                    <div class="item-name">${sanitizeInput(item.nome)}</div>
                     <div class="item-value">
                         ${quantidade}x R$ ${valor.toFixed(2)} = R$ ${subtotal.toFixed(2)}
                     </div>
@@ -460,7 +648,9 @@ function renderizarItensCategoriaSelecionada() {
     }
     
     const totalCategoria = calcularTotalCategoria(categoriaSelecionada);
-    categoriaTotalElement.textContent = `R$ ${totalCategoria.toFixed(2)}`;
+    if (categoriaTotalElement) {
+        categoriaTotalElement.textContent = `R$ ${totalCategoria.toFixed(2)}`;
+    }
 }
 
 // Modais
@@ -469,27 +659,29 @@ function abrirModalEdicao(itemId) {
     if (!item) return;
     
     itemEditando = item;
-    editItemNomeInput.value = item.nome;
-    editItemValorInput.value = item.valor || 0;
-    editItemQuantidadeInput.value = item.quantidade || 1;
+    
+    if (editItemNomeInput) editItemNomeInput.value = item.nome;
+    if (editItemValorInput) editItemValorInput.value = item.valor || 0;
+    if (editItemQuantidadeInput) editItemQuantidadeInput.value = item.quantidade || 1;
+    
     atualizarSubtotal();
-    editModal.style.display = 'flex';
+    if (editModal) editModal.style.display = 'flex';
 }
 
 function fecharModal() {
-    editModal.style.display = 'none';
+    if (editModal) editModal.style.display = 'none';
     itemEditando = null;
 }
 
 function salvarEdicaoItem() {
     if (!itemEditando) return;
     
-    const novoNome = editItemNomeInput.value.trim();
-    const novoValor = parseFloat(editItemValorInput.value) || 0;
-    const novaQuantidade = parseInt(editItemQuantidadeInput.value) || 1;
+    const novoNome = editItemNomeInput ? editItemNomeInput.value.trim() : '';
+    const novoValor = editItemValorInput ? parseFloat(editItemValorInput.value) || 0 : 0;
+    const novaQuantidade = editItemQuantidadeInput ? parseInt(editItemQuantidadeInput.value) || 1 : 1;
     
-    if (!novoNome) {
-        mostrarToast('Digite um nome para o item', 'warning');
+    if (!validateInput(novoNome, 'text')) {
+        mostrarToast('Digite um nome válido para o item', 'warning');
         return;
     }
     
@@ -513,6 +705,8 @@ function excluirItem() {
 }
 
 function atualizarSubtotal() {
+    if (!editItemValorInput || !editItemQuantidadeInput || !editSubtotal) return;
+    
     const valor = parseFloat(editItemValorInput.value) || 0;
     const quantidade = parseInt(editItemQuantidadeInput.value) || 1;
     const subtotal = valor * quantidade;
@@ -762,10 +956,12 @@ function toggleTema() {
     document.body.classList.toggle('dark-mode');
     localStorage.setItem('darkMode', darkMode);
     
-    if (darkMode) {
-        toggleThemeBtn.innerHTML = '<i class="fas fa-sun"></i>';
-    } else {
-        toggleThemeBtn.innerHTML = '<i class="fas fa-moon"></i>';
+    if (toggleThemeBtn) {
+        if (darkMode) {
+            toggleThemeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+            toggleThemeBtn.innerHTML = '<i class="fas fa-moon"></i>';
+        }
     }
 }
 
@@ -807,15 +1003,46 @@ function atualizarResumo() {
     totalGeralElement.textContent = `R$ ${calcularTotalGeral().toFixed(2)}`;
 }
 
-// Toast notifications
-function mostrarToast(mensagem, tipo = 'success') {
+// Toast notifications melhorado
+function mostrarToast(mensagem, tipo = 'success', duracao = 3000) {
+    // Remover toasts existentes para evitar acúmulo
+    const toastsExistentes = document.querySelectorAll('.toast');
+    toastsExistentes.forEach(toast => toast.remove());
+    
     const toast = document.createElement('div');
     toast.className = `toast ${tipo}`;
-    toast.innerHTML = `<i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'error' ? 'exclamation-circle' : 'exclamation-triangle'}"></i> ${mensagem}`;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'polite');
+    
+    const iconMap = {
+        'success': 'check-circle',
+        'error': 'exclamation-circle',
+        'warning': 'exclamation-triangle',
+        'info': 'info-circle'
+    };
+    
+    const icon = iconMap[tipo] || 'info-circle';
+    toast.innerHTML = `
+        <i class="fas fa-${icon}" aria-hidden="true"></i>
+        <span class="toast-message">${sanitizeInput(mensagem)}</span>
+        <button class="toast-close" aria-label="Fechar notificação">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
     
     document.body.appendChild(toast);
     
-    setTimeout(() => {
+    // Adicionar botão de fechar
+    const closeBtn = toast.querySelector('.toast-close');
+    closeBtn.addEventListener('click', () => {
         toast.remove();
-    }, 3000);
+    });
+    
+    // Auto-remove após duração
+    setTimeout(() => {
+        if (document.body.contains(toast)) {
+            toast.style.animation = 'slideOutRight 0.3s ease-in forwards';
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, duracao);
 }
