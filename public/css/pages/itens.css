@@ -87,6 +87,7 @@
 
       .item-content {
         flex: 1;
+        min-width: 0;
       }
 
       .item-nome {
@@ -100,6 +101,7 @@
         display: flex;
         gap: 12px;
         align-items: center;
+        flex-wrap: wrap;
       }
 
       .item-quantidade {
@@ -156,4 +158,33 @@
 
       body.dark-mode .subtotal-display {
         background: rgba(16, 185, 129, 0.2);
+      }
+
+      @media (max-width: 768px) {
+        .item-card {
+          flex-wrap: wrap;
+          align-items: flex-start;
+        }
+
+        .item-content {
+          width: calc(100% - 40px);
+        }
+
+        .item-valor {
+          min-width: 0;
+          text-align: left;
+          width: 100%;
+          margin-left: 40px;
+        }
+
+        .item-actions {
+          width: 100%;
+          margin-left: 40px;
+          justify-content: flex-start;
+        }
+
+        .header-stats {
+          width: 100%;
+          gap: 8px;
+        }
       }

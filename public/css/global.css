@@ -74,12 +74,15 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   padding-top: var(--navbar-height);
+  overflow-x: hidden;
 }
 
 .container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
+  width: 100%;
+  min-width: 0;
 }
 
 @media (min-width: 768px) {
@@ -266,6 +269,15 @@ body.dark-mode .empty-state {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .toast {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    max-width: none;
   }
 }
 

@@ -17,6 +17,8 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
+  flex-wrap: wrap;
+  word-break: break-word;
 }
 
 .page-header h1 i {
@@ -129,6 +131,15 @@ body.dark-mode .version {
 }
 
 @media (max-width: 768px) {
+  .page-header {
+    padding: 24px 14px;
+  }
+
+  .page-header h1 {
+    font-size: 1.55rem;
+    line-height: 1.25;
+  }
+
   .field-split {
     grid-template-columns: 1fr;
   }

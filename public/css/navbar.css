@@ -176,6 +176,8 @@ body.page-transitioning .main-nav::after {
     opacity: 0;
     visibility: hidden;
     transition: var(--transition);
+    max-height: calc(100dvh - var(--navbar-height));
+    overflow-y: auto;
   }
 
   body.dark-mode .nav-menu {
@@ -200,6 +202,10 @@ body.page-transitioning .main-nav::after {
 
   .nav-brand span {
     display: none;
+  }
+
+  .nav-user-item {
+    margin-left: 0;
   }
 
   .nav-user {

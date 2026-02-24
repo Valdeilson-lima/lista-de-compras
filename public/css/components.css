@@ -13,6 +13,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
   margin-bottom: 20px;
   padding-bottom: 15px;
   border-bottom: 2px solid var(--gray-color);
@@ -24,6 +26,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 body.dark-mode .card-header h2 {
@@ -426,6 +429,15 @@ textarea:focus {
 @media (max-width: 768px) {
   .card {
     padding: 20px;
+  }
+
+  .card-header {
+    align-items: flex-start;
+  }
+
+  .card-header h2 {
+    font-size: 1.2rem;
+    line-height: 1.3;
   }
 
   .input-group {
