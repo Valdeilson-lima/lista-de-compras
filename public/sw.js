@@ -1,5 +1,5 @@
 // Service Worker para PWA - Cache offline
-const CACHE_NAME = "lista-compras-v2";
+const CACHE_NAME = "lista-compras-v3";
 const urlsToCache = [
   "/",
   "/home.html",
@@ -11,9 +11,12 @@ const urlsToCache = [
   "/css/global.css",
   "/css/navbar.css",
   "/css/components.css",
+  "/css/pages/home.css",
+  "/css/pages/login.css",
   "/js/utils.js",
-  "/style.css",
-  "/script.js",
+  "/js/auth.js",
+  "/js/pages/home.js",
+  "/js/pages/login.js",
   "/firebase-config.js",
   "/polyfills.js",
   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",

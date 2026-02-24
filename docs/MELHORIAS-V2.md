@@ -36,9 +36,8 @@
 
 **Componentes:**
 
-- `components/navbar.html` - Estrutura HTML da navbar
-- `css/navbar.css` - Estilos específicos da navegação
-- Integração via JavaScript (`inicializarNavbar()`)
+- `public/css/navbar.css` - Estilos específicos da navegação
+- Integração via JavaScript (`inicializarNavbar()` em `public/js/utils.js`)
 
 ---
 

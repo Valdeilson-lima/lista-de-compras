@@ -1,24 +1,30 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap");
+
 :root {
   /* Cores principais */
-  --primary-color: #10b981;
-  --primary-hover: #059669;
-  --primary-light: #d1fae5;
-  --secondary-color: #3b82f6;
-  --secondary-hover: #2563eb;
-  --danger-color: #ef4444;
-  --danger-hover: #dc2626;
-  --warning-color: #f59e0b;
-  --warning-hover: #f97316;
-  --success-color: #22c55e;
+  --primary-color: #0f766e;
+  --primary-hover: #115e59;
+  --primary-light: #ccfbf1;
+  --secondary-color: #1d4ed8;
+  --secondary-hover: #1e40af;
+  --danger-color: #b91c1c;
+  --danger-hover: #991b1b;
+  --warning-color: #b45309;
+  --warning-hover: #92400e;
+  --success-color: #15803d;
 
   /* Cores neutras */
-  --light-color: #f9fafb;
-  --dark-color: #1f2937;
-  --gray-color: #e5e7eb;
-  --gray-dark: #9ca3af;
-  --gray-darker: #6b7280;
+  --light-color: #f8fafc;
+  --dark-color: #0f172a;
+  --gray-color: #cbd5e1;
+  --gray-dark: #64748b;
+  --gray-darker: #334155;
   --white: #ffffff;
   --black: #000000;
+
+  /* Tipografia */
+  --font-body: "Manrope", "Segoe UI", sans-serif;
+  --font-heading: "Sora", "Segoe UI", sans-serif;
 
   /* Sombras */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -46,13 +52,24 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
 }
 
 body {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background:
+    radial-gradient(circle at 10% 15%, rgba(15, 118, 110, 0.12), transparent 34%),
+    radial-gradient(circle at 85% 10%, rgba(29, 78, 216, 0.12), transparent 32%),
+    linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
   color: var(--dark-color);
   line-height: 1.6;
   min-height: 100vh;
@@ -107,7 +124,10 @@ body {
 
 /* Tema escuro */
 body.dark-mode {
-  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+  background:
+    radial-gradient(circle at 15% 15%, rgba(15, 118, 110, 0.18), transparent 32%),
+    radial-gradient(circle at 82% 12%, rgba(29, 78, 216, 0.14), transparent 34%),
+    linear-gradient(135deg, #020617 0%, #0f172a 100%);
   color: var(--light-color);
 }
 

@@ -1,0 +1,162 @@
+      .page-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 40px 20px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        box-shadow: var(--shadow-lg);
+        animation: slideDown 0.5s ease-out;
+      }
+
+      .page-header h1 {
+        font-size: 2.2rem;
+        color: var(--dark-color);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+      }
+
+      .page-header h1 i {
+        color: var(--primary-color);
+      }
+
+      .page-header p {
+        color: var(--gray-darker);
+        font-size: 1.1rem;
+      }
+
+      .ranking-item {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 12px;
+        margin-bottom: 12px;
+        transition: var(--transition-fast);
+        border: 2px solid transparent;
+      }
+
+      .ranking-item:hover {
+        background: white;
+        box-shadow: var(--shadow);
+        border-color: var(--primary-color);
+      }
+
+      .ranking-position {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        min-width: 60px;
+        text-align: center;
+      }
+
+      .ranking-info {
+        flex: 1;
+      }
+
+      .ranking-nome {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 5px;
+      }
+
+      .ranking-meta {
+        font-size: 0.9rem;
+        color: var(--gray-darker);
+      }
+
+      .ranking-valor {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+      }
+
+      .orcamento-card {
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition-fast);
+      }
+
+      .orcamento-card:hover {
+        box-shadow: var(--shadow);
+      }
+
+      .orcamento-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--gray-color);
+      }
+
+      .orcamento-header h3 {
+        font-size: 1.3rem;
+        color: var(--dark-color);
+        margin: 0;
+      }
+
+      .orcamento-valores {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+
+      .orcamento-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .orcamento-item span {
+        font-size: 0.9rem;
+        color: var(--gray-darker);
+      }
+
+      .orcamento-item strong {
+        font-size: 1.1rem;
+        color: var(--dark-color);
+      }
+
+      .progress-text {
+        text-align: center;
+        margin-top: 10px;
+        font-weight: 600;
+        color: var(--gray-darker);
+      }
+
+      body.dark-mode .page-header,
+      body.dark-mode .ranking-item,
+      body.dark-mode .orcamento-card {
+        background: rgba(45, 55, 72, 0.95);
+      }
+
+      body.dark-mode .page-header h1,
+      body.dark-mode .ranking-nome,
+      body.dark-mode .orcamento-header h3,
+      body.dark-mode .orcamento-item strong {
+        color: var(--light-color);
+      }
+
+      body.dark-mode .ranking-item:hover {
+        background: rgba(55, 65, 81, 0.95);
+      }
+
+      @media (max-width: 768px) {
+        .orcamento-valores {
+          grid-template-columns: 1fr;
+        }
+
+        .ranking-item {
+          flex-direction: column;
+          text-align: center;
+        }
+      }

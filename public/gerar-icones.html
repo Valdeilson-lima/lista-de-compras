@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gerar Ícones PWA</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; padding: 20px">
+    <h1>Gerador de Ícones PWA</h1>
+    <p>Clique nos botões abaixo para baixar os ícones:</p>
+
+    <canvas
+      id="canvas192"
+      width="192"
+      height="192"
+      style="border: 1px solid #ddd; margin: 10px"
+    ></canvas>
+    <br />
+    <button onclick="baixarIcone192()">Baixar icon-192.png</button>
+
+    <br /><br />
+
+    <canvas
+      id="canvas512"
+      width="512"
+      height="512"
+      style="border: 1px solid #ddd; margin: 10px"
+    ></canvas>
+    <br />
+    <button onclick="baixarIcone512()">Baixar icon-512.png</button>
+
+    <script>
+      function desenharIcone(canvas, tamanho) {
+        const ctx = canvas.getContext("2d");
+
+        // Fundo gradiente
+        const gradient = ctx.createLinearGradient(0, 0, tamanho, tamanho);
+        gradient.addColorStop(0, "#10b981");
+        gradient.addColorStop(1, "#3b82f6");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, tamanho, tamanho);
+
+        // Carrinho de compras
+        ctx.fillStyle = "white";
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = tamanho / 30;
+
+        const scale = tamanho / 192;
+
+        // Corpo do carrinho
+        ctx.beginPath();
+        ctx.moveTo(40 * scale, 50 * scale);
+        ctx.lineTo(55 * scale, 50 * scale);
+        ctx.lineTo(70 * scale, 120 * scale);
+        ctx.lineTo(140 * scale, 120 * scale);
+        ctx.lineTo(155 * scale, 50 * scale);
+        ctx.lineTo(170 * scale, 50 * scale);
+        ctx.stroke();
+
+        // Rodas
+        ctx.beginPath();
+        ctx.arc(80 * scale, 140 * scale, 10 * scale, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(130 * scale, 140 * scale, 10 * scale, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Alça
+        ctx.beginPath();
+        ctx.moveTo(50 * scale, 50 * scale);
+        ctx.lineTo(50 * scale, 30 * scale);
+        ctx.quadraticCurveTo(60 * scale, 20 * scale, 70 * scale, 30 * scale);
+        ctx.lineTo(70 * scale, 50 * scale);
+        ctx.stroke();
+      }
+
+      // Desenhar ícones
+      desenharIcone(document.getElementById("canvas192"), 192);
+      desenharIcone(document.getElementById("canvas512"), 512);
+
+      function baixarIcone192() {
+        const canvas = document.getElementById("canvas192");
+        const link = document.createElement("a");
+        link.download = "icon-192.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      }
+
+      function baixarIcone512() {
+        const canvas = document.getElementById("canvas512");
+        const link = document.createElement("a");
+        link.download = "icon-512.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      }
+
+      // Download automático ao carregar
+      setTimeout(() => {
+        console.log("Ícones prontos! Clique nos botões para baixar.");
+      }, 100);
+    </script>
+  </body>
+</html>

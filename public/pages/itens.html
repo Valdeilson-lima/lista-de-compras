@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Gerencie seus itens de compras" />
+    <meta name="theme-color" content="#10b981" />
+    <title>Itens - Lista de Compras</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/navbar.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/pages/app-pages.css" />
+    <link rel="stylesheet" href="../css/pages/itens.css" />
+
+    <link rel="manifest" href="../manifest.json" />
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  </head>
+  <body>
+    <main class="container" role="main" aria-label="Gerenciamento de itens">
+      <header class="page-header">
+        <h1><i class="fas fa-list" aria-hidden="true"></i> Gerenciar Itens</h1>
+        <p>Adicione e organize os itens da sua lista de compras</p>
+      </header>
+
+      <!-- Formulário Novo Item -->
+      <section class="card" aria-label="Novo item">
+        <div class="card-header">
+          <h2><i class="fas fa-plus-circle"></i> Novo Item</h2>
+        </div>
+        <div class="card-body">
+          <form id="itemForm">
+            <div class="input-group">
+              <input
+                type="text"
+                id="itemNome"
+                placeholder="Nome do item"
+                maxlength="100"
+                required
+              />
+              <select id="itemCategoria" required>
+                <option value="">Selecione a categoria</option>
+              </select>
+              <input
+                type="number"
+                id="itemQuantidade"
+                placeholder="Qtd"
+                min="1"
+                value="1"
+                class="input-qtd"
+              />
+              <input
+                type="number"
+                id="itemValor"
+                placeholder="Valor (R$)"
+                step="0.01"
+                min="0"
+                value="0"
+              />
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Adicionar
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Filtros e Busca -->
+      <section class="card" aria-label="Lista de itens">
+        <div class="card-header">
+          <h2><i class="fas fa-filter"></i> Filtros</h2>
+          <button
+            id="toggleThemeBtn"
+            class="btn btn-outline btn-compact"
+          >
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="filters-container">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input
+                type="search"
+                id="searchInput"
+                placeholder="Buscar itens..."
+                autocomplete="off"
+              />
+            </div>
+            <select id="categoriaFiltro">
+              <option value="">Todas as categorias</option>
+            </select>
+            <select id="sortSelect">
+              <option value="nome">Nome A-Z</option>
+              <option value="nome-desc">Nome Z-A</option>
+              <option value="valor">Menor preço</option>
+              <option value="valor-desc">Maior preço</option>
+            </select>
+            <button id="clearCompradosBtn" class="btn btn-danger">
+              <i class="fas fa-broom"></i> Limpar Comprados
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Lista de Itens -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-shopping-basket"></i> Meus Itens</h2>
+          <div class="header-stats">
+            <span class="stat-badge"
+              >Total: <strong id="totalItens">0</strong></span
+            >
+            <span class="stat-badge"
+              >Comprados: <strong id="totalComprados">0</strong></span
+            >
+            <span class="stat-badge"
+              >Valor: <strong id="totalValor">R$ 0,00</strong></span
+            >
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="itensList">
+            <!-- Itens serão carregados aqui -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Modal Editar Item -->
+    <div id="editModal" class="modal">
+      <div class="modal-content">
+        <button class="close" aria-label="Fechar">&times;</button>
+        <h3><i class="fas fa-edit"></i> Editar Item</h3>
+        <div class="form-group">
+          <label class="form-label">Nome do Item</label>
+          <input type="text" id="editItemNome" maxlength="100" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Categoria</label>
+          <select id="editItemCategoria"></select>
+        </div>
+        <div class="field-split">
+          <div class="form-group">
+            <label class="form-label">Quantidade</label>
+            <input type="number" id="editItemQuantidade" min="1" value="1" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Valor (R$)</label>
+            <input type="number" id="editItemValor" step="0.01" min="0" />
+          </div>
+        </div>
+        <div class="subtotal-display">
+          Subtotal: <span id="editSubtotal">R$ 0,00</span>
+        </div>
+        <div class="modal-actions">
+          <button id="saveBtn" class="btn btn-primary">
+            <i class="fas fa-save"></i> Salvar
+          </button>
+          <button id="deleteBtn" class="btn btn-danger">
+            <i class="fas fa-trash"></i> Excluir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../polyfills.js"></script>
+    <script src="../firebase-config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/pages/itens.js"></script>
+  </body>
+</html>

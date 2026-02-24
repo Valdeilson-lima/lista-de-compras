@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+    />
+    <meta
+      name="description"
+      content="Lista de compras inteligente para gerenciar seus gastos mensais"
+    />
+    <meta name="theme-color" content="#10b981" />
+    <meta name="msapplication-TileColor" content="#10b981" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Lista de Compras</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Sora:wght@700;800&display=swap"
+    />
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        font-family: "Manrope", "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at 12% 16%, rgba(15, 118, 110, 0.26), transparent 36%),
+          radial-gradient(circle at 85% 12%, rgba(29, 78, 216, 0.22), transparent 34%),
+          linear-gradient(140deg, #0f172a 0%, #1e293b 100%);
+        color: white;
+      }
+      .loading {
+        text-align: center;
+      }
+      .loading p {
+        font-weight: 600;
+      }
+      .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid white;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="loading" aria-busy="true" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <p id="redirectMsg">Redirecionando...</p>
+      <p style="margin-top: 20px">
+        <a href="home.html" style="color: white; text-decoration: underline">
+          Clique aqui se não for redirecionado automaticamente
+        </a>
+      </p>
+    </main>
+
+    <script>
+      let redirecting = false;
+      let authNullGuard = null;
+
+      function redirectSafely(path) {
+        if (redirecting) return;
+        const target = new URL(path, window.location.href);
+        if (target.pathname === window.location.pathname) return;
+        redirecting = true;
+        window.location.replace(path);
+      }
+
+      firebase.auth().onAuthStateChanged((user) => {
+        const msg = document.getElementById("redirectMsg");
+
+        if (authNullGuard) {
+          clearTimeout(authNullGuard);
+          authNullGuard = null;
+        }
+
+        if (user) {
+          msg.textContent = "Redirecionando para a página inicial...";
+          setTimeout(() => {
+            redirectSafely("home.html");
+          }, 300);
+        } else {
+          msg.textContent = "Verificando sessão...";
+          authNullGuard = setTimeout(() => {
+            if (!firebase.auth().currentUser) {
+              msg.textContent = "Redirecionando para a página de login...";
+              redirectSafely("pages/login.html");
+            }
+          }, 600);
+        }
+      });
+    </script>
+  </body>
+</html>

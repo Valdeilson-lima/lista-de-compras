@@ -1,6 +1,6 @@
 /* Cards */
 .card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(10px);
   border-radius: var(--border-radius);
   padding: 25px;
@@ -24,6 +24,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+body.dark-mode .card-header h2 {
+  color: #f1f5f9;
 }
 
 .card-header h2 i {
@@ -58,6 +62,16 @@
 
 .btn:active {
   transform: translateY(0);
+}
+
+.btn:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: 3px solid rgba(16, 185, 129, 0.35);
+  outline-offset: 2px;
 }
 
 .btn-primary {
@@ -97,7 +111,7 @@
 }
 
 .btn-outline {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.75);
   border: 2px solid var(--primary-color);
   color: var(--primary-color);
 }
@@ -105,6 +119,12 @@
 .btn-outline:hover {
   background: var(--primary-color);
   color: white;
+}
+
+body.dark-mode .btn-outline {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: #2dd4bf;
+  color: #ccfbf1;
 }
 
 .btn-clear {
@@ -140,20 +160,30 @@
   color: var(--dark-color);
 }
 
+body.dark-mode .form-label {
+  color: #e2e8f0;
+}
+
 input[type="text"],
 input[type="number"],
 input[type="email"],
+input[type="password"],
 input[type="search"],
 select,
 textarea {
   width: 100%;
   padding: 14px;
-  border: 2px solid var(--gray-color);
+  border: 2px solid #94a3b8;
   border-radius: var(--border-radius-sm);
   font-size: 1rem;
   transition: var(--transition-fast);
   background: white;
-  color: var(--dark-color);
+  color: #0b1220;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #64748b;
 }
 
 input:focus,
@@ -307,7 +337,8 @@ textarea:focus {
 
 .stat-card-label {
   font-size: 0.9rem;
-  opacity: 0.9;
+  font-weight: 700;
+  opacity: 0.98;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -315,6 +346,7 @@ textarea:focus {
 .stat-card-value {
   font-size: 2rem;
   font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
 }
 
 /* Search box */

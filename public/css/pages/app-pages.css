@@ -1,0 +1,139 @@
+.page-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 34px 20px;
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.98), rgba(236, 253, 245, 0.95));
+  border-radius: 16px;
+  border: 1px solid rgba(15, 118, 110, 0.16);
+  box-shadow: var(--shadow-lg);
+  animation: slideDown 0.4s ease-out;
+}
+
+.page-header h1 {
+  font-size: clamp(1.8rem, 3vw, 2.3rem);
+  color: var(--dark-color);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.page-header h1 i {
+  color: var(--primary-color);
+}
+
+.page-header p {
+  color: var(--gray-darker);
+  font-size: 1.02rem;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.card {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.btn-compact {
+  padding: 8px 14px;
+  font-size: 0.9rem;
+}
+
+.field-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.input-qtd {
+  max-width: 100px;
+}
+
+.config-item-separator {
+  margin-top: 25px;
+  border-top: 2px solid var(--gray-color);
+  padding-top: 25px;
+}
+
+.icon-heart {
+  color: #ef4444;
+}
+
+.stat-card.stat-card-1 {
+  background: linear-gradient(135deg, #0f766e, #115e59);
+}
+
+.stat-card.stat-card-2 {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+}
+
+.stat-card.stat-card-3 {
+  background: linear-gradient(135deg, #b45309, #92400e);
+}
+
+.stat-card.stat-card-4 {
+  background: linear-gradient(135deg, #6d28d9, #5b21b6);
+}
+
+.empty-state.empty-state-full {
+  grid-column: 1 / -1;
+}
+
+body.dark-mode .page-header,
+body.dark-mode .card,
+body.dark-mode .categoria-card,
+body.dark-mode .item-card,
+body.dark-mode .ranking-item,
+body.dark-mode .orcamento-card,
+body.dark-mode .config-item {
+  background: rgba(30, 41, 59, 0.96) !important;
+  border-color: rgba(148, 163, 184, 0.28) !important;
+}
+
+body.dark-mode .page-header h1,
+body.dark-mode .page-header p,
+body.dark-mode .card-header h2,
+body.dark-mode .info-label,
+body.dark-mode .info-value,
+body.dark-mode .percentual-text,
+body.dark-mode .item-nome,
+body.dark-mode .item-quantidade,
+body.dark-mode .item-valor small,
+body.dark-mode .ranking-nome,
+body.dark-mode .ranking-meta,
+body.dark-mode .progress-text,
+body.dark-mode .orcamento-header h3,
+body.dark-mode .orcamento-item span,
+body.dark-mode .orcamento-item strong,
+body.dark-mode .config-info h3,
+body.dark-mode .config-info p,
+body.dark-mode .stat-info-item span,
+body.dark-mode .stat-info-item strong,
+body.dark-mode .description,
+body.dark-mode .features-list h3,
+body.dark-mode .features-list li,
+body.dark-mode .about-footer p,
+body.dark-mode .copyright {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .stats-info,
+body.dark-mode .features-list li {
+  background: rgba(15, 118, 110, 0.2) !important;
+}
+
+body.dark-mode .stat-badge,
+body.dark-mode .version {
+  background: rgba(45, 212, 191, 0.18) !important;
+  color: #ccfbf1 !important;
+}
+
+@media (max-width: 768px) {
+  .field-split {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-compact {
+    padding: 7px 12px;
+  }
+}

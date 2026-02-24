@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Gerencie suas categorias de compras" />
+    <meta name="theme-color" content="#10b981" />
+    <title>Categorias - Lista de Compras</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/navbar.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/pages/app-pages.css" />
+    <link rel="stylesheet" href="../css/pages/categorias.css" />
+
+    <link rel="manifest" href="../manifest.json" />
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  </head>
+  <body>
+    <main
+      class="container"
+      role="main"
+      aria-label="Gerenciamento de categorias"
+    >
+      <header class="page-header">
+        <h1>
+          <i class="fas fa-tags" aria-hidden="true"></i> Gerenciar Categorias
+        </h1>
+        <p>Organize suas compras em categorias com controle de orçamento</p>
+      </header>
+
+      <!-- Formulário Nova Categoria -->
+      <section class="card" aria-label="Nova categoria">
+        <div class="card-header">
+          <h2><i class="fas fa-plus-circle"></i> Nova Categoria</h2>
+        </div>
+        <div class="card-body">
+          <form id="categoriaForm">
+            <div class="input-group">
+              <input
+                type="text"
+                id="categoriaNome"
+                placeholder="Nome da categoria (ex: Cereais, Laticínios)"
+                maxlength="50"
+                required
+              />
+              <input
+                type="number"
+                id="categoriaOrcamento"
+                placeholder="Orçamento (R$) - opcional"
+                step="0.01"
+                min="0"
+              />
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Adicionar
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Lista de Categorias -->
+      <section class="card" aria-label="Lista de categorias">
+        <div class="card-header">
+          <h2><i class="fas fa-list"></i> Minhas Categorias</h2>
+          <button
+            id="toggleThemeBtn"
+            class="btn btn-outline btn-compact"
+          >
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+        <div class="card-body">
+          <div id="categoriasList" class="grid grid-3">
+            <!-- Categorias serão carregadas aqui -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal Editar Categoria -->
+    <div id="editModal" class="modal">
+      <div class="modal-content">
+        <button class="close" aria-label="Fechar">&times;</button>
+        <h3><i class="fas fa-edit"></i> Editar Categoria</h3>
+        <div class="form-group">
+          <label class="form-label">Nome da Categoria</label>
+          <input
+            type="text"
+            id="editCategoriaNome"
+            placeholder="Nome da categoria"
+            maxlength="50"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Orçamento Mensal (R$)</label>
+          <input
+            type="number"
+            id="editCategoriaOrcamento"
+            placeholder="0.00"
+            step="0.01"
+            min="0"
+          />
+        </div>
+        <div class="modal-actions">
+          <button id="saveBtn" class="btn btn-primary">
+            <i class="fas fa-save"></i> Salvar
+          </button>
+          <button id="deleteBtn" class="btn btn-danger">
+            <i class="fas fa-trash"></i> Excluir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../polyfills.js"></script>
+    <script src="../firebase-config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/pages/categorias.js"></script>
+  </body>
+</html>

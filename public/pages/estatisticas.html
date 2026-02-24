@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Visualize estatísticas e gráficos dos seus gastos"
+    />
+    <meta name="theme-color" content="#10b981" />
+    <title>Estatísticas - Lista de Compras</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/navbar.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/pages/app-pages.css" />
+    <link rel="stylesheet" href="../css/pages/estatisticas.css" />
+
+    <link rel="manifest" href="../manifest.json" />
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <main class="container" role="main" aria-label="Estatísticas e análises">
+      <header class="page-header">
+        <h1>
+          <i class="fas fa-chart-pie" aria-hidden="true"></i> Estatísticas e
+          Análises
+        </h1>
+        <p>Visualize seus gastos e acompanhe seu orçamento</p>
+      </header>
+
+      <!-- Stats Cards -->
+      <section class="stats-grid" aria-label="Resumo de estatísticas">
+        <div class="stat-card stat-card-1">
+          <i class="fas fa-shopping-cart stat-card-icon"></i>
+          <span class="stat-card-label">Total de Itens</span>
+          <span class="stat-card-value" id="totalItens">0</span>
+        </div>
+
+        <div class="stat-card stat-card-2">
+          <i class="fas fa-check-circle stat-card-icon"></i>
+          <span class="stat-card-label">Comprados</span>
+          <span class="stat-card-value" id="totalComprados">0</span>
+        </div>
+
+        <div class="stat-card stat-card-3">
+          <i class="fas fa-tags stat-card-icon"></i>
+          <span class="stat-card-label">Categorias</span>
+          <span class="stat-card-value" id="totalCategorias">0</span>
+        </div>
+
+        <div class="stat-card stat-card-4">
+          <i class="fas fa-dollar-sign stat-card-icon"></i>
+          <span class="stat-card-label">Total Gasto</span>
+          <span class="stat-card-value" id="totalGasto">R$ 0,00</span>
+        </div>
+      </section>
+
+      <!-- Gráficos -->
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2><i class="fas fa-chart-pie"></i> Gastos por Categoria</h2>
+            <button
+              id="toggleThemeBtn"
+              class="btn btn-outline btn-compact"
+            >
+              <i class="fas fa-moon"></i>
+            </button>
+          </div>
+          <div class="card-body">
+            <canvas id="pieChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2><i class="fas fa-chart-bar"></i> Comparativo</h2>
+          </div>
+          <div class="card-body">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ranking de Categorias -->
+      <section class="card" aria-label="Gráficos de gastos">
+        <div class="card-header">
+          <h2><i class="fas fa-trophy"></i> Ranking de Gastos por Categoria</h2>
+        </div>
+        <div class="card-body">
+          <div id="rankingCategorias">
+            <!-- Ranking será carregado aqui -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Orçamento por Categoria -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-piggy-bank"></i> Status de Orçamento</h2>
+        </div>
+        <div class="card-body">
+          <div id="orcamentoStatus">
+            <!-- Status será carregado aqui -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="../polyfills.js"></script>
+    <script src="../firebase-config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/pages/estatisticas.js"></script>
+  </body>
+</html>
