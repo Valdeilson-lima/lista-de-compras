@@ -19,6 +19,95 @@ function obterUserId() {
   return user.uid;
 }
 
+// Contexto de múltiplas listas
+function obterListaPadraoId(userId) {
+  return `lista_principal_${userId}`;
+}
+
+function obterChaveListaAtiva(userId) {
+  return `listaAtiva:${userId}`;
+}
+
+function normalizarListaIdPorUsuario(listaId, userId) {
+  return listaId || obterListaPadraoId(userId);
+}
+
+function obterListaAtivaIdUsuario(userId) {
+  if (!userId) return "";
+  return obterLocalStorage(obterChaveListaAtiva(userId), obterListaPadraoId(userId));
+}
+
+function salvarListaAtivaIdUsuario(userId, listaId) {
+  if (!userId || !listaId) return;
+  salvarLocalStorage(obterChaveListaAtiva(userId), listaId);
+  window.dispatchEvent(
+    new CustomEvent("lista-ativa-alterada", {
+      detail: { userId, listaId },
+    }),
+  );
+}
+
+async function garantirListaPadraoUsuario(userId) {
+  if (!db || !userId) return null;
+
+  const listaPadraoId = obterListaPadraoId(userId);
+  const listaRef = db.collection("listas").doc(listaPadraoId);
+  const listaDoc = await listaRef.get();
+
+  if (!listaDoc.exists) {
+    await listaRef.set({
+      userId,
+      nome: "Lista Principal",
+      padrao: true,
+      dataCriacao: new Date().toISOString(),
+      dataAtualizacao: new Date().toISOString(),
+    });
+  }
+
+  return listaPadraoId;
+}
+
+async function carregarListasUsuario(userId) {
+  if (!db || !userId) return [];
+  await garantirListaPadraoUsuario(userId);
+
+  const snapshot = await db.collection("listas").where("userId", "==", userId).get();
+  return snapshotToArray(snapshot).sort((a, b) =>
+    String(a.nome || "").localeCompare(String(b.nome || ""), "pt-BR"),
+  );
+}
+
+async function prepararContextoListas(userId) {
+  if (!userId) return { listas: [], listaAtivaId: "" };
+
+  const listas = await carregarListasUsuario(userId);
+  const listaPadraoId = obterListaPadraoId(userId);
+  let listaAtivaId = obterListaAtivaIdUsuario(userId) || listaPadraoId;
+
+  const listaExiste = listas.some((lista) => lista.id === listaAtivaId);
+  if (!listaExiste) {
+    listaAtivaId = listaPadraoId;
+    salvarListaAtivaIdUsuario(userId, listaAtivaId);
+  }
+
+  return { listas, listaAtivaId };
+}
+
+function filtrarRegistrosPorListaAtiva(registros, userId) {
+  if (!userId) return [];
+  const listaAtivaId = obterListaAtivaIdUsuario(userId);
+  return (registros || []).filter(
+    (registro) => normalizarListaIdPorUsuario(registro?.listaId, userId) === listaAtivaId,
+  );
+}
+
+function anexarListaAtivaEmDados(dados, userId) {
+  return {
+    ...dados,
+    listaId: obterListaAtivaIdUsuario(userId) || obterListaPadraoId(userId),
+  };
+}
+
 // Debounce para otimizar performance
 function debounce(func, wait) {
   let timeout;
@@ -34,8 +123,9 @@ function debounce(func, wait) {
 
 // Sanitizar input para evitar XSS
 function sanitizeInput(input) {
+  if (input === null || input === undefined) return "";
   const div = document.createElement("div");
-  div.textContent = input;
+  div.textContent = String(input);
   return div.innerHTML;
 }
 
@@ -60,10 +150,31 @@ function validateInput(input, type = "text") {
 
 // Formatar valor em reais
 function formatarReal(valor) {
+  const valorSeguro = Number.isFinite(Number(valor)) ? Number(valor) : 0;
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
-  }).format(valor);
+  }).format(valorSeguro);
+}
+
+// Converter para número seguro
+function toNumber(value, fallback = 0) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+// Inteiro positivo (ex: quantidade)
+function parsePositiveInt(value, fallback = 1, min = 1, max = 99999) {
+  const parsed = Math.trunc(toNumber(value, fallback));
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.min(Math.max(parsed, min), max);
+}
+
+// Número decimal não-negativo (ex: valores monetários)
+function parseNonNegativeNumber(value, fallback = 0, max = 999999999) {
+  const parsed = toNumber(value, fallback);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.min(Math.max(parsed, 0), max);
 }
 
 // Formatar data
@@ -80,24 +191,49 @@ function formatarData(data) {
 }
 
 // Mostrar toast notification
-function mostrarToast(mensagem, tipo = "info") {
+function mostrarToast(mensagem, tipo = "info", options = {}) {
+  const { duration = 3000, actionLabel = "", onAction = null } = options;
   const toast = document.createElement("div");
   toast.className = `toast ${tipo}`;
-  toast.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <i class="fas fa-${getIconeToast(tipo)}"></i>
-      <span>${sanitizeInput(mensagem)}</span>
-    </div>
-  `;
+  toast.innerHTML = `<div class="toast-content"></div>`;
+
+  const content = toast.querySelector(".toast-content");
+  if (!content) return;
+
+  const icon = document.createElement("i");
+  icon.className = `fas fa-${getIconeToast(tipo)}`;
+
+  const message = document.createElement("span");
+  message.textContent = mensagem;
+
+  content.appendChild(icon);
+  content.appendChild(message);
+
+  if (actionLabel && typeof onAction === "function") {
+    const actionBtn = document.createElement("button");
+    actionBtn.type = "button";
+    actionBtn.className = "toast-action";
+    actionBtn.textContent = actionLabel;
+    actionBtn.addEventListener("click", async () => {
+      try {
+        await onAction();
+      } catch (error) {
+        console.error("Erro na ação do toast:", error);
+      }
+    });
+    content.appendChild(actionBtn);
+  }
 
   document.body.appendChild(toast);
 
   setTimeout(() => {
     toast.style.animation = "slideDown 0.3s ease-out reverse";
     setTimeout(() => {
-      document.body.removeChild(toast);
+      if (toast.parentNode) {
+        document.body.removeChild(toast);
+      }
     }, 300);
-  }, 3000);
+  }, Math.max(1200, Number(duration) || 3000));
 }
 
 function getIconeToast(tipo) {
@@ -335,6 +471,10 @@ function inicializarNavbar() {
           <i class="fas fa-bars"></i>
         </button>
         <ul class="nav-menu">
+          <li class="nav-item nav-list-item" id="navListSwitcher" hidden>
+            <label for="navListSelect" class="nav-list-label">Lista ativa</label>
+            <select id="navListSelect" class="nav-list-select" aria-label="Selecionar lista ativa"></select>
+          </li>
           <li class="nav-item">
             <a href="${homeHref}" class="nav-link">
               <i class="fas fa-home"></i>
@@ -435,6 +575,47 @@ function inicializarNavbar() {
   }
 }
 
+async function inicializarSeletorListaNavbar() {
+  const switcher = document.getElementById("navListSwitcher");
+  const select = document.getElementById("navListSelect");
+  if (!switcher || !select || !db) return;
+
+  let user = null;
+  if (typeof verificarAutenticacao === "function") {
+    user = await verificarAutenticacao();
+  } else {
+    user = firebase.auth().currentUser;
+  }
+
+  const userId = user?.uid;
+  if (!userId) return;
+
+  try {
+    const { listas, listaAtivaId } = await prepararContextoListas(userId);
+    if (!listas.length) return;
+
+    select.innerHTML = listas
+      .map((lista) => `<option value="${lista.id}">${sanitizeInput(lista.nome)}</option>`)
+      .join("");
+
+    select.value = listaAtivaId;
+    switcher.hidden = false;
+
+    select.addEventListener("change", () => {
+      const proximaListaId = select.value;
+      const proximaLista = listas.find((lista) => lista.id === proximaListaId);
+      salvarListaAtivaIdUsuario(userId, proximaListaId);
+      mostrarToast(
+        `Lista ativa: ${proximaLista ? proximaLista.nome : "selecionada"}`,
+        "success",
+      );
+      window.location.reload();
+    });
+  } catch (error) {
+    console.error("Erro ao inicializar seletor de listas:", error);
+  }
+}
+
 // Executar callback quando o DOM estiver pronto
 function onDomReady(callback) {
   if (document.readyState === "loading") {
@@ -456,6 +637,7 @@ function initPageBase(options = {}) {
 
   if (withNavbar) {
     inicializarNavbar();
+    inicializarSeletorListaNavbar();
   }
   if (withTheme) {
     inicializarTema();

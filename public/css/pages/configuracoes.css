@@ -38,6 +38,12 @@
         transition: var(--transition-fast);
       }
 
+      .listas-grid {
+        display: grid;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
+
       .config-item:hover {
         background: rgba(255, 255, 255, 0.8);
         box-shadow: var(--shadow-sm);
@@ -264,6 +270,10 @@
           flex-direction: column;
           gap: 15px;
           text-align: center;
+        }
+
+        .listas-grid .input-group {
+          align-items: stretch;
         }
 
         .stats-info {

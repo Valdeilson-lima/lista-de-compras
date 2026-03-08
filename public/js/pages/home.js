@@ -1,5 +1,7 @@
 let dashboardCategorias = [];
 let dashboardItens = [];
+let userIdAtual = "";
+let listasUsuario = [];
 
 onDomReady(() => {
   initPageBase();
@@ -18,14 +20,21 @@ async function inicializarDashboard() {
   }
 
   const user = await verificarAutenticacao();
-  const userId = user?.uid;
-  if (!userId) return;
+  userIdAtual = user?.uid || "";
+  if (!userIdAtual) return;
+
+  const contextoListas = await prepararContextoListas(userIdAtual);
+  listasUsuario = contextoListas.listas || [];
+  atualizarNomeListaAtiva();
 
   db.collection("categorias")
-    .where("userId", "==", userId)
+    .where("userId", "==", userIdAtual)
     .onSnapshot(
       (snapshot) => {
-        dashboardCategorias = snapshotToArray(snapshot).sort(
+        dashboardCategorias = filtrarRegistrosPorListaAtiva(
+          snapshotToArray(snapshot),
+          userIdAtual,
+        ).sort(
           ordenarPorDataCriacaoDesc,
         );
         renderDashboard();
@@ -37,10 +46,13 @@ async function inicializarDashboard() {
     );
 
   db.collection("itens")
-    .where("userId", "==", userId)
+    .where("userId", "==", userIdAtual)
     .onSnapshot(
       (snapshot) => {
-        dashboardItens = snapshotToArray(snapshot).sort(ordenarPorDataCriacaoDesc);
+        dashboardItens = filtrarRegistrosPorListaAtiva(
+          snapshotToArray(snapshot),
+          userIdAtual,
+        ).sort(ordenarPorDataCriacaoDesc);
         renderDashboard();
       },
       (error) => {
@@ -48,6 +60,15 @@ async function inicializarDashboard() {
         mostrarToast("Falha ao carregar itens", "error");
       },
     );
+}
+
+function atualizarNomeListaAtiva() {
+  const listaAtivaEl = document.getElementById("activeListName");
+  if (!listaAtivaEl || !userIdAtual) return;
+
+  const listaAtivaId = obterListaAtivaIdUsuario(userIdAtual);
+  const listaAtiva = listasUsuario.find((lista) => lista.id === listaAtivaId);
+  listaAtivaEl.textContent = `Lista ativa: ${listaAtiva?.nome || "Lista Principal"}`;
 }
 
 function ordenarPorDataCriacaoDesc(a, b) {

@@ -2,14 +2,13 @@ let categorias = [];
 let itens = [];
 let pieChart = null;
 let barChart = null;
+let userIdAtual = "";
 
 onDomReady(() => {
   initPageBase({
     onThemeToggled: () => {
       setTimeout(() => {
-        if (categorias.length > 0 && itens.length > 0) {
-          criarGraficos();
-        }
+        criarGraficosComFallback();
       }, 100);
     },
   });
@@ -17,20 +16,27 @@ onDomReady(() => {
   carregarDados();
 });
 
-function carregarDados() {
+async function carregarDados() {
   if (!db) {
     mostrarToast("Erro ao conectar com o banco de dados", "error");
     return;
   }
 
-  const userId = obterUserId();
-  if (!userId) return;
+  if (typeof verificarAutenticacao !== "function") {
+    mostrarToast("Falha ao validar autenticação", "error");
+    return;
+  }
+
+  const user = await verificarAutenticacao();
+  userIdAtual = user?.uid || "";
+  if (!userIdAtual) return;
+  await prepararContextoListas(userIdAtual);
 
   db.collection("categorias")
-    .where("userId", "==", userId)
+    .where("userId", "==", userIdAtual)
     .onSnapshot(
       (snapshot) => {
-        categorias = snapshotToArray(snapshot);
+        categorias = filtrarRegistrosPorListaAtiva(snapshotToArray(snapshot), userIdAtual);
         processarDados();
       },
       (error) => {
@@ -40,10 +46,10 @@ function carregarDados() {
     );
 
   db.collection("itens")
-    .where("userId", "==", userId)
+    .where("userId", "==", userIdAtual)
     .onSnapshot(
       (snapshot) => {
-        itens = snapshotToArray(snapshot);
+        itens = filtrarRegistrosPorListaAtiva(snapshotToArray(snapshot), userIdAtual);
         processarDados();
       },
       (error) => {
@@ -54,10 +60,8 @@ function carregarDados() {
 }
 
 function processarDados() {
-  if (categorias.length === 0 || itens.length === 0) return;
-
   atualizarEstatisticas();
-  criarGraficos();
+  criarGraficosComFallback();
   criarRanking();
   criarStatusOrcamento();
 }
@@ -204,6 +208,30 @@ function criarGraficos() {
       },
     },
   });
+}
+
+function criarGraficosComFallback() {
+  const pieCtx = document.getElementById("pieChart");
+  const barCtx = document.getElementById("barChart");
+  if (!pieCtx || !barCtx) return;
+
+  const possuiDados = itens.some(
+    (item) => parsePositiveInt(item.quantidade, 1) * parseNonNegativeNumber(item.valor, 0) > 0,
+  );
+
+  if (!possuiDados) {
+    if (pieChart) {
+      pieChart.destroy();
+      pieChart = null;
+    }
+    if (barChart) {
+      barChart.destroy();
+      barChart = null;
+    }
+    return;
+  }
+
+  criarGraficos();
 }
 
 function criarRanking() {

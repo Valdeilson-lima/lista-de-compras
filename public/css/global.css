@@ -77,17 +77,35 @@ body {
   overflow-x: hidden;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
-  width: 100%;
-  min-width: 0;
 }
 
 @media (min-width: 768px) {
   .container {
     padding: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  .container {
+    padding: 12px;
   }
 }
 
@@ -239,6 +257,31 @@ body.dark-mode .empty-state {
   max-width: 400px;
 }
 
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.toast-action {
+  margin-left: auto;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: transparent;
+  color: white;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.toast-action:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
 .toast.success {
   background: var(--success-color);
 }
@@ -269,15 +312,6 @@ body.dark-mode .empty-state {
 @keyframes spin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-@media (max-width: 768px) {
-  .toast {
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    max-width: none;
   }
 }
 

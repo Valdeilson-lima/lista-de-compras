@@ -354,15 +354,44 @@ body.dark-mode .item-preview-price {
 
 @media (max-width: 768px) {
   .home-header {
-    padding: 28px 16px;
+    padding: 24px 14px;
+    text-align: left;
+  }
+
+  .home-header h1 {
+    font-size: 1.7rem;
+  }
+
+  .home-header p,
+  .home-hint {
+    font-size: 0.92rem;
   }
 
   .home-header-actions {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .home-header-actions .btn {
     width: 100%;
+  }
+
+  .card-header {
+    gap: 8px;
+  }
+
+  .card-header .btn-compact {
+    width: 100%;
+  }
+
+  .progress-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .progress-cards {
+    grid-template-columns: 1fr;
   }
 
   .item-preview {
@@ -370,7 +399,36 @@ body.dark-mode .item-preview-price {
     flex-direction: column;
   }
 
+  .item-preview-price {
+    width: 100%;
+    text-align: right;
+  }
+
   .btn-compact {
     padding: 7px 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .home-kicker {
+    font-size: 0.72rem;
+    padding: 5px 10px;
+  }
+
+  .home-header h1 {
+    font-size: 1.45rem;
+    line-height: 1.25;
+  }
+
+  .stat-card {
+    padding: 18px;
+  }
+
+  .stat-card-value {
+    font-size: 1.6rem;
+  }
+
+  .action-card {
+    padding: 18px;
   }
 }

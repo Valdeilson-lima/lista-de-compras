@@ -49,6 +49,44 @@
         </div>
       </div>
 
+      <!-- Listas -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-layer-group"></i> Listas de Compra</h2>
+        </div>
+        <div class="card-body">
+          <div class="listas-grid">
+            <div class="form-group">
+              <label class="form-label" for="activeListSelect">Lista ativa</label>
+              <select id="activeListSelect"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="newListName">Nova lista</label>
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="newListName"
+                  placeholder="Ex: Compra Semanal"
+                  maxlength="60"
+                />
+                <button id="addListBtn" class="btn btn-primary" type="button">
+                  <i class="fas fa-plus"></i> Criar
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="config-item">
+            <div class="config-info">
+              <h3>Excluir lista selecionada</h3>
+              <p>Remove a lista e seus dados vinculados (categorias e itens).</p>
+            </div>
+            <button id="deleteListBtn" class="btn btn-danger" type="button">
+              <i class="fas fa-trash"></i> Excluir Lista
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Exportar Dados -->
       <div class="card">
         <div class="card-header">

@@ -29,13 +29,29 @@
 
       .filters-container {
         display: grid;
-        grid-template-columns: 2fr 1fr 1fr auto;
+        grid-template-columns: 2fr 1fr 1fr 1fr auto;
         gap: 15px;
+      }
+
+      @media (max-width: 1024px) {
+        .filters-container {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .filters-container .search-box,
+        .filters-container button {
+          grid-column: span 2;
+        }
       }
 
       @media (max-width: 768px) {
         .filters-container {
           grid-template-columns: 1fr;
+        }
+
+        .filters-container .search-box,
+        .filters-container button {
+          grid-column: auto;
         }
       }
 
@@ -87,7 +103,6 @@
 
       .item-content {
         flex: 1;
-        min-width: 0;
       }
 
       .item-nome {
@@ -102,6 +117,22 @@
         gap: 12px;
         align-items: center;
         flex-wrap: wrap;
+      }
+
+      .item-status {
+        font-size: 0.76rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border-radius: 999px;
+        padding: 4px 10px;
+        background: rgba(30, 64, 175, 0.12);
+        color: #1e40af;
+      }
+
+      .item-status.status-comprado {
+        background: rgba(21, 128, 61, 0.14);
+        color: #166534;
       }
 
       .item-quantidade {
@@ -142,6 +173,35 @@
         margin: 15px 0;
       }
 
+      .form-subtotal {
+        margin: -8px 0 0;
+        color: var(--gray-darker);
+        font-weight: 700;
+      }
+
+      .items-loading {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .loading-line {
+        height: 76px;
+        border-radius: 12px;
+        background: linear-gradient(90deg, rgba(203, 213, 225, 0.6), rgba(226, 232, 240, 0.92), rgba(203, 213, 225, 0.6));
+        background-size: 220% 100%;
+        animation: shimmer 1.1s infinite linear;
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: 0 0;
+        }
+        100% {
+          background-position: 220% 0;
+        }
+      }
+
       body.dark-mode .page-header,
       body.dark-mode .item-card {
         background: rgba(45, 55, 72, 0.95);
@@ -160,31 +220,96 @@
         background: rgba(16, 185, 129, 0.2);
       }
 
+      body.dark-mode .form-subtotal {
+        color: #cbd5e1;
+      }
+
+      body.dark-mode .item-status {
+        background: rgba(147, 197, 253, 0.16);
+        color: #bfdbfe;
+      }
+
+      body.dark-mode .item-status.status-comprado {
+        background: rgba(34, 197, 94, 0.15);
+        color: #bbf7d0;
+      }
+
+      body.dark-mode .loading-line {
+        background: linear-gradient(90deg, rgba(71, 85, 105, 0.65), rgba(100, 116, 139, 0.85), rgba(71, 85, 105, 0.65));
+      }
+
       @media (max-width: 768px) {
-        .item-card {
-          flex-wrap: wrap;
-          align-items: flex-start;
+        .page-header {
+          padding: 24px 14px;
+          margin-bottom: 20px;
         }
 
-        .item-content {
-          width: calc(100% - 40px);
-        }
-
-        .item-valor {
-          min-width: 0;
-          text-align: left;
-          width: 100%;
-          margin-left: 40px;
-        }
-
-        .item-actions {
-          width: 100%;
-          margin-left: 40px;
+        .page-header h1 {
           justify-content: flex-start;
+          text-align: left;
+          font-size: 1.5rem;
+          gap: 8px;
+        }
+
+        .page-header p {
+          text-align: left;
+          font-size: 0.92rem;
         }
 
         .header-stats {
           width: 100%;
           gap: 8px;
+        }
+
+        .stat-badge {
+          flex: 1 1 100%;
+          text-align: center;
+        }
+
+        .item-card {
+          padding: 14px;
+          display: grid;
+          grid-template-columns: auto 1fr;
+          grid-template-areas:
+            "check content"
+            "value value"
+            "actions actions";
+          align-items: start;
+        }
+
+        .item-checkbox {
+          grid-area: check;
+          margin-top: 2px;
+        }
+
+        .item-content {
+          grid-area: content;
+        }
+
+        .item-valor {
+          grid-area: value;
+          min-width: 0;
+          text-align: left;
+          font-size: 1.1rem;
+        }
+
+        .item-actions {
+          grid-area: actions;
+          justify-content: flex-end;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .item-nome {
+          font-size: 1rem;
+        }
+
+        .item-meta {
+          gap: 8px;
+        }
+
+        .item-status,
+        .badge {
+          font-size: 0.7rem;
         }
       }
